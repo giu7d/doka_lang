@@ -1,15 +1,19 @@
 # Doka Language
 
 ## Features
+
+### Parser
 - [x] Module Begin (S)
 - [x] Constant Definition
-- [ ] Funtion Definition
-- [ ] Constant inicialization
-- [ ] Arrays
-- [ ] Lambda Functions
-- [ ] Function inicialization
-- [ ] Pipe operator
-- [ ] Pattern matching
+- [x] Function Definition
+- [x] Constant Initialization
+- [x] Arrays
+- [x] Lambda Functions
+- [x] Function Initialization
+- [x] Pipe Operator
+- [ ] Logical Expression
+- [ ] Mathematical Expression
+- [ ] Pattern Matching
 - [ ] IO module
 - [ ] List module
  

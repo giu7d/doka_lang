@@ -43,32 +43,62 @@ public class Doka {
 PARSER_END(Doka)
 
 SKIP : {
-    " " | "\r" | "\t" | "\n"
+    " "  | "\t"
 }
 
-/*
-* TERMINALS
-* */
+// Reserved Words
 TOKEN : {
-     <MODULE: "module">
-|    <EXIT: "exit">
-|    <EQUAL: "=">
+    <MODULE: "module">
+|   <EXIT: "exit">
+|   <FUNCTION: "fun">
 }
 
-/*
-* NON-TERMINALS
-* */
-
+// Operators
 TOKEN : {
-    <UPPER_CASE_CHAR: ["A"-"Z"]>
-|   <LOWER_CASE_CHAR: ["a"-"z"]>
+	<SUM: "+">
+|	<SUBTRACT: "-">
+|	<MULTIPLY: "*">
+|	<DIVIDE: "/">
+|	<ASSING: "=">
+|	<GREATER: ">" >
+|	<SMALLER: "<">
+|	<GREATER_OR_EQUAL: "<=" >
+|	<SMALLER_OR_EQUAL: ">=" >
+|	<DIFFERENT: "==!">
+|	<EQUAL: "==">
+|	<PIPE: "|>">
+}
+
+// Symbols
+TOKEN : {
+    <UNDERLINE: "_">
+|   <COMMA: ",">
+|   <EOL: "\n" | "\r" | "\r\n" >
+|   <ARROW: "=>">
+|   <QUOTE: "\"">
+|   <START_BRACKET: "[">
+|   <END_BRACKET: "]">
+|   <START_PARAM: "(">
+|   <END_PARAM: ")">
+|   <START_BLOCK: ":">
+|   <END_BLOCK: "end">
 |   <#DIGIT: ["0"-"9"]>
-|   <CHAR: (<LOWER_CASE_CHAR> | <UPPER_CASE_CHAR> | "_" )>
+|   <UPPER_CASE_CHAR: ["A"-"Z"]>
+|   <LOWER_CASE_CHAR: ["a"-"z"]>
+|   <ID_CHAR: (<LOWER_CASE_CHAR> | <UPPER_CASE_CHAR> | <UNDERLINE> )>
 }
 
+// IDs
 TOKEN : {
-    <MODULE_ID: (<UPPER_CASE_CHAR>  (<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT> )*)>
-|   <PATTERN_ID: (<CHAR> (<CHAR> | <DIGIT>)*)>
+    <MODULE_ID: (<UPPER_CASE_CHAR>(<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT> )+)>
+|   <GENERIC_ID: (<ID_CHAR> (<ID_CHAR> | <DIGIT>)+)>
+}
+
+// Types
+TOKEN : {
+	 <NUMBER: (<DIGIT>)+( "." (<DIGIT>)+)?>
+|    <STRING: (<QUOTE> (~["\""])* <QUOTE>)>
+|    <BOOLEAN: ("true" | "false")>
 }
 
 
@@ -76,16 +106,78 @@ TOKEN : {
 SimpleNode Main() :
 {}
 {
-    <MODULE> <MODULE_ID>
-        (definePattern())*
-    (<EOF>|<EXIT>)
-    {
+    (<EOF>|<EXIT><EOL>) {
+        return jjtThis;
+    }
+|    <MODULE> <MODULE_ID> <EOL>
+        (module_block() | <EOL>)*
+    (<EOF>|<EXIT><EOL>) {
         return jjtThis;
     }
 }
 
-void definePattern () :
+void module_block():
 {}
 {
-    (<PATTERN_ID> <EQUAL> (<UPPER_CASE_CHAR>) )
+    declare_function()
+|   <GENERIC_ID>  (assing_constant() | call_function())
+}
+
+void function_block():
+{}
+{
+    expression() (<PIPE> expression())*
+}
+
+void expression():
+{}
+{
+    <NUMBER>
+|   <STRING>
+|   <BOOLEAN>
+|   <GENERIC_ID>
+|   declare_list()
+|   declare_lambda_function()
+}
+
+void generic_expression_list():
+{}
+{
+    (expression() (<COMMA> expression())*)*
+}
+
+void declare_list():
+{}
+{
+   <START_BRACKET> generic_expression_list() <END_BRACKET>
+}
+
+void declare_params():
+{}
+{
+   <START_PARAM> generic_expression_list() <END_PARAM>
+}
+
+void declare_lambda_function():
+{}
+{
+    declare_params() <ARROW> function_block()
+}
+
+void declare_function():
+{}
+{
+    <FUNCTION> <GENERIC_ID> declare_params() <START_BLOCK> (<EOL>)* (function_block() (<EOL>)*)+ <END_BLOCK> <EOL>
+}
+
+void assing_constant () :
+{}
+{
+     <ASSING> expression() <EOL>
+}
+
+void call_function ():
+{}
+{
+    <START_PARAM> expression() <END_PARAM>
 }
