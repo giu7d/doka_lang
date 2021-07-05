@@ -102,7 +102,6 @@ TOKEN : {
 }
 
 
-
 SimpleNode Main() :
 {}
 {
@@ -120,7 +119,7 @@ void module_block():
 {}
 {
     declare_function()
-|   <GENERIC_ID>  (assing_constant() | call_function())
+|   <GENERIC_ID>  (assing_constant() | (declare_params())+ )
 }
 
 void function_block():
@@ -129,13 +128,19 @@ void function_block():
     expression() (<PIPE> expression())*
 }
 
-void expression():
+void types():
 {}
 {
     <NUMBER>
 |   <STRING>
 |   <BOOLEAN>
-|   <GENERIC_ID>
+}
+
+void expression():
+{}
+{
+    types()
+|   <GENERIC_ID> (declare_params())*
 |   declare_list()
 |   declare_lambda_function()
 }
@@ -174,10 +179,4 @@ void assing_constant () :
 {}
 {
      <ASSING> expression() <EOL>
-}
-
-void call_function ():
-{}
-{
-    <START_PARAM> expression() <END_PARAM>
 }
