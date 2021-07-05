@@ -1,0 +1,91 @@
+options {
+  STATIC = true;
+}
+
+PARSER_BEGIN(Doka)
+
+public class Doka {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    Doka parser = new Doka(System.in);
+
+    System.out.println("------------------------");
+    System.out.println("\") Doka Language ");
+    System.out.println("\tv0.0.1");
+    System.out.println("------------------------");
+    System.out.println("\nListen for input...\n");
+
+    while (true) {
+
+        try{
+            SimpleNode tree = parser.Main();
+            tree.dump(" ");
+            /**
+                if (parser.Main()) {
+                    System.out.println("OK");
+                } else {
+                    System.out.println("Bye!");
+                    System.exit(0);
+                }
+            */
+
+        } catch (Exception e) {
+                System.out.println("NOT OK");
+                System.out.println(e.getMessage());
+                Doka.ReInit(System.in);
+        }
+
+    }
+  }
+}
+
+PARSER_END(Doka)
+
+SKIP : {
+    " " | "\r" | "\t" | "\n"
+}
+
+/*
+* TERMINALS
+* */
+TOKEN : {
+     <MODULE: "module">
+|    <EXIT: "exit">
+|    <EQUAL: "=">
+}
+
+/*
+* NON-TERMINALS
+* */
+
+TOKEN : {
+    <UPPER_CASE_CHAR: ["A"-"Z"]>
+|   <LOWER_CASE_CHAR: ["a"-"z"]>
+|   <#DIGIT: ["0"-"9"]>
+|   <CHAR: (<LOWER_CASE_CHAR> | <UPPER_CASE_CHAR> | "_" )>
+}
+
+TOKEN : {
+    <MODULE_ID: (<UPPER_CASE_CHAR>  (<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT> )*)>
+|   <PATTERN_ID: (<CHAR> (<CHAR> | <DIGIT>)*)>
+}
+
+
+
+SimpleNode Main() :
+{}
+{
+    <MODULE> <MODULE_ID>
+        (definePattern())*
+    (<EOF>|<EXIT>)
+    {
+        return jjtThis;
+    }
+}
+
+void definePattern () :
+{}
+{
+    (<PATTERN_ID> <EQUAL> (<UPPER_CASE_CHAR>) )
+}

@@ -1,0 +1,21 @@
+task parse {
+    parseTree()
+    parseLanguage()
+}
+
+void parseTree() {
+    exec {
+        workingDir '.'
+        commandLine 'jjtree', '-OUTPUT_DIRECTORY=out', 'src/com/doka/doka.jjt'
+    }
+    logger.quiet('\nTask :build:parseTree TREE PARSED SUCCESSFULLY\n')
+
+}
+
+void parseLanguage() {
+    exec {
+        workingDir '.'
+        commandLine 'javacc', '-STATIC=true', '-OUTPUT_DIRECTORY=out', 'out/doka.jj'
+    }
+    logger.quiet('\nTask :build:parseTree LANGUAGE PARSED SUCCESSFULLY\n')
+}
