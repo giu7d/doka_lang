@@ -4,17 +4,17 @@
 
 ### Parser
 
--[x] Module Begin (S)
--[x] Constant Definition
--[] Funtion Definition
--[] Constant inicialization
--[] Arrays
--[] Lambda Functions
--[] Function inicialization
--[] Pipe operator
--[] Pattern matching
--[] IO module
--[] List module
+- [x] Module Begin (S)
+- [x] Constant Definition
+- [ ] Funtion Definition
+- [ ] Constant inicialization
+- [ ] Arrays
+- [ ] Lambda Functions
+- [ ] Function inicialization
+- [ ] Pipe operator
+- [ ] Pattern matching
+- [ ] IO module
+- [ ] List module
  
 ## Specifications
 
