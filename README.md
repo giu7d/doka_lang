@@ -40,8 +40,8 @@ module MyFirstApplication
 ### Backus–Naur form
 ```
 <MAIN> ::= <MODULE> <MODULE_ID>
-    <DEFINE_CONSTANT>   ::= <CONSTANT_ID> <EQUAL> <TYPES>
-    <DEFINE_FUNTION>    ::= <FUNCTION><CONSTANT_ID><START_PARAM><PARAMS><END_PARAM><START_BLOCK> <EXPR> <END_BLOCK>
+    <DEFINE_CONSTANT>   ::= <CONSTANT_ID> <EQUAL> <EXPRESSION>
+    <DEFINE_FUNTION>    ::= <FUNCTION> <CONSTANT_ID> <START_PARAM> <PARAMS> <END_PARAM> <START_BLOCK> <STATMENT> <END_BLOCK>
 <EXIT>
 ```
 
@@ -76,7 +76,9 @@ module MyFirstApplication
 - `<BASIC_TYPE>`        ::= `<FLOAT> | <INT> | <STRING>` 
 - `<ARRAY>`             ::= `("[" (<BASIC_TYPE>)* "]")`
 - `<TYPE>`              ::= `<ARRAY> | <BASIC_TYPE> | <LAMBDA_FUNCTION>`
-- `<LAMBDA_FUNCTION>`   ::= `(<PARAMS><ARROW><EXPR><SCAPE>)`
+- `<LAMBDA_FUNCTION>`   ::= `(<PARAMS><ARROW><STATMENT><SCAPE>)`
+ 
     
 #### TO DO  
-- `<EXPR>` ::= ?
+- `<STATMENT>`   ::= ?
+- `<EXPRESSION>` ::= ?
