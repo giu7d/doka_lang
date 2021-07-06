@@ -128,19 +128,12 @@ void function_block():
     expression() (<PIPE> expression())*
 }
 
-void types():
-{}
-{
-    <NUMBER>
-|   <STRING>
-|   <BOOLEAN>
-}
 
 void expression():
 {}
 {
-    types()
-|   <GENERIC_ID> (declare_params())*
+    call_constant_or_function()
+|   declare_types()
 |   declare_list()
 |   declare_lambda_function()
 }
@@ -156,6 +149,14 @@ void declare_list():
 {
    <START_BRACKET> generic_expression_list() <END_BRACKET>
 }
+void declare_types():
+{}
+{
+    <NUMBER>
+|   <STRING>
+|   <BOOLEAN>
+}
+
 
 void declare_params():
 {}
@@ -179,4 +180,10 @@ void assing_constant () :
 {}
 {
      <ASSING> expression() <EOL>
+}
+
+void call_constant_or_function () :
+{}
+{
+     <GENERIC_ID> (declare_params())*
 }

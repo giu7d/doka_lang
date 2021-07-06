@@ -13,9 +13,11 @@
 - [x] Pipe Operator
 - [ ] Logical Expression
 - [ ] Mathematical Expression
-- [ ] Pattern Matching
-- [ ] IO module
-- [ ] List module
+- [ ] List.map
+- [ ] List.reduce
+- [ ] If/Else
+- [ ] Pattern Matching (?)
+- [ ] IO module (?)
  
 ## Specifications
 
@@ -29,8 +31,8 @@ module MyFirstApplication
 
     arr = [1, 2, 3, 4]
 
-    sum = a, b => a + b end
-    divide = a, b => a / b end
+    sum = (a, b) => a + b
+    divide = (a, b) => a / b
 
     fun calc_average(data):
         List.reduce 0, sum 
