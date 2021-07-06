@@ -76,6 +76,7 @@ TOKEN : {
 // Symbols
 TOKEN : {
     <UNDERLINE: "_">
+|   <DOT: ".">
 |   <COMMA: ",">
 |   <EOL: "\n" | "\r" | "\r\n" >
 |   <ARROW: "=>">
@@ -87,15 +88,15 @@ TOKEN : {
 |   <START_BLOCK: ":">
 |   <END_BLOCK: "end">
 |   <#DIGIT: ["0"-"9"]>
-|   <UPPER_CASE_CHAR: ["A"-"Z"]>
-|   <LOWER_CASE_CHAR: ["a"-"z"]>
-|   <ID_CHAR: (<LOWER_CASE_CHAR> | <UPPER_CASE_CHAR> | <UNDERLINE> )>
+|   <#UPPER_CASE_CHAR: ["A"-"Z"]>
+|   <#LOWER_CASE_CHAR: ["a"-"z"]>
+|   <#ID_CHAR: (<LOWER_CASE_CHAR> | <UPPER_CASE_CHAR> | <UNDERLINE> )>
 }
 
 // IDs
 TOKEN : {
-    <MODULE_ID: (<UPPER_CASE_CHAR>(<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT> )+)>
-|   <GENERIC_ID: (<ID_CHAR> (<ID_CHAR> | <DIGIT>)+)>
+    <MODULE_ID: (<UPPER_CASE_CHAR>(<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT>)*)>
+|   <GENERIC_ID: (<ID_CHAR> (<ID_CHAR> | <DIGIT>)* | (<DOT> (<ID_CHAR> | <DIGIT>)+)*)>
 }
 
 // Types
