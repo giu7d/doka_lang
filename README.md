@@ -1,21 +1,23 @@
 # Doka Language
 
+
 ## Features
 
 ### Parser
 - [x] Module Begin (S)
+- [x] Constant Initialization
 - [x] Constant Definition
 - [x] Function Definition
-- [x] Constant Initialization
-- [x] Arrays
-- [x] Lambda Functions
 - [x] Function Initialization
+- [x] Arrays
+- [x] Lambda Functions (One line)
+- [x] Lambda Functions (Multiple lines)
 - [x] Pipe Operator
+- [x] If/Else
 - [ ] Logical Expression
 - [ ] Mathematical Expression
 - [ ] List.map
 - [ ] List.reduce
-- [ ] If/Else
 - [ ] Pattern Matching (?)
 - [ ] IO module (?)
  
@@ -52,7 +54,7 @@ module MyFirstApplication
 <EXIT>
 ```
 
-### Terminals
+#### Terminals
 - `<MODULE>`        ::= `module`
 - `<EXIT>`          ::= `exit` `| <EOF>`
 - `<FUNCTION>`      ::= `fun`
@@ -70,15 +72,15 @@ module MyFirstApplication
 - `<COMMA>`         ::= `,`
 - `<PIPE_OPERATOR>` ::= `|>`
 
-### Non-Terminals
+#### Non-Terminals
 - `<MAIN>`                  ::= `(<MODULE> <MODULE_ID> <EXIT>)`
  
-### Definitions
+##### Definitions
 - `<DEFINE_CONSTANT>`       ::= `(<CONSTANT_ID> <EQUAL> <EXPRESSION>)`
 - `<DEFINE_FUNTION>`        ::= `(<FUNCTION> <CONSTANT_ID> <START_PARAM> <PARAMS> <END_PARAM> <START_BLOCK> <STATMENT> <END_BLOCK>)`
 - `<DEFINE_LAMBDA_FUNTION>` ::= `(<PARAMS><ARROW><STATMENT><SCAPE>)`
 
-#### IDs
+##### IDs
 - `<MODULE_ID>`         ::= `(<UPPER_CASE_CHAR> (<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT>)*)`
 - `<CONSTANT_ID>`       ::= `(<CHAR>)(<CHAR> | <DIGIT>)*`
 - `<UPPER_CASE_CHAR>`   ::= `[A-Z]`
@@ -86,16 +88,76 @@ module MyFirstApplication
 - `<DIGIT>`             ::= `[0-9]`
 - `<CHAR>`              ::= `(<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <UNDERLINE>)`
 
-#### Types
+##### Types
 - `<FLOAT>`             ::= `?`
 - `<INT>`               ::= `?`
 - `<STRING>`            ::= `?`
 - `<PRIMARY_TYPE>`      ::= `(<FLOAT> | <INT> | <STRING>)` 
 - `<ARRAY>`             ::= `(<START_BRACKET> (<PRIMARY_TYPE><COMMA>)* (<PRIMARY_TYPE>) <END_BRACKET>)`
 
-#### Functions
+##### Functions
 - `<PARAMS>`            ::= `(<PRIMARY_TYPE> | <ARRAY>)*`
- 
-#### Expressions and Statements
+
+##### Expressions and Statements
 - `<STATMENT>`   ::= `?`
 - `<EXPRESSION>` ::= `?`
+
+
+## Guide
+
+### 1. Create a module
+    ```
+    module MyApplication
+    ```
+   
+### 2. Define a constant
+    ```
+    hello = "world"
+   
+    # or define a list
+
+    my_list = [1, "foo", hello, true, [10, 1.8, "bars"], []]
+    ```
+
+### 3.  Function
+    ```
+    fun calc(data):
+        ...do something..
+    end 
+   
+    calc()  # call function
+    ```
+   
+#### 3.1 Lambda function
+    ```
+    sum = (a1, a2) => a1 + a2
+    sum(2,2) # returns 4    
+   
+    addTwo =: (a1) => 
+        a1
+        |> sum(2)
+    end
+
+    add(2) # returns 4
+    ```
+
+#### 3.2 Pipe Operator (Works with every function)
+    ```
+    processData =: (data) => 
+        data
+        |> doProcess1()
+        |> doProcess2()
+    end
+    ```
+
+#### 4 Conditions
+
+    ```
+    if (expr):
+        ...
+    else if (expr2):
+        ...
+    else:
+        ...
+    end
+    ```

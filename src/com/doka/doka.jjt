@@ -51,6 +51,9 @@ TOKEN : {
     <MODULE: "module">
 |   <EXIT: "exit">
 |   <FUNCTION: "fun">
+|   <IF: "if">
+|   <ELSE: "else">
+|   <ELSEIF: "else if">
 }
 
 // Operators
@@ -59,6 +62,7 @@ TOKEN : {
 |	<SUBTRACT: "-">
 |	<MULTIPLY: "*">
 |	<DIVIDE: "/">
+|	<REST: "%">
 |	<ASSING: "=">
 |	<GREATER: ">" >
 |	<SMALLER: "<">
@@ -109,46 +113,67 @@ SimpleNode Main() :
         return jjtThis;
     }
 |    <MODULE> <MODULE_ID> <EOL>
-        (module_block() | <EOL>)*
+        (define_module_block() | <EOL>)*
     (<EOF>|<EXIT><EOL>) {
         return jjtThis;
     }
 }
 
-void module_block():
-{}
-{
-    declare_function()
-|   <GENERIC_ID>  (assing_constant() | (declare_params())+ )
-}
-
-void function_block():
-{}
-{
-    expression() (<PIPE> expression())*
-}
-
+// Expression
 
 void expression():
 {}
 {
-    call_constant_or_function()
-|   declare_types()
+    declare_types()
 |   declare_list()
 |   declare_lambda_function()
+|   <GENERIC_ID> (call_function())?
 }
 
-void generic_expression_list():
+// Definitions
+
+void define_expression_list():
 {}
 {
-    (expression() (<COMMA> expression())*)*
+    expression() (<COMMA> expression())*
 }
+
+void define_function_params():
+{}
+{
+   <START_PARAM> (define_expression_list())* <END_PARAM>
+}
+
+void define_conditional_params():
+{}
+{
+   <START_PARAM> define_expression_list() <END_PARAM>
+}
+
+void define_module_block():
+{}
+{
+    declare_function()
+|   declare_condition()
+|   <GENERIC_ID> (assing_constant() | call_function())?
+}
+
+void define_function_block():
+{}
+{
+    expression()
+|   declare_condition()
+|   <PIPE> define_function_block()
+}
+
+// Declarations
 
 void declare_list():
 {}
 {
-   <START_BRACKET> generic_expression_list() <END_BRACKET>
+   <START_BRACKET> (define_expression_list())* <END_BRACKET>
 }
+
 void declare_types():
 {}
 {
@@ -157,33 +182,47 @@ void declare_types():
 |   <BOOLEAN>
 }
 
-
-void declare_params():
-{}
-{
-   <START_PARAM> generic_expression_list() <END_PARAM>
-}
-
 void declare_lambda_function():
 {}
 {
-    declare_params() <ARROW> function_block()
+     define_function_params() <ARROW> expression()(<PIPE> expression())*
+|    <START_BLOCK> define_function_params() <ARROW> (<EOL>)*
+        (define_function_block() (<EOL>)*)+
+     <END_BLOCK>
 }
 
 void declare_function():
 {}
 {
-    <FUNCTION> <GENERIC_ID> declare_params() <START_BLOCK> (<EOL>)* (function_block() (<EOL>)*)+ <END_BLOCK> <EOL>
+    <FUNCTION> <GENERIC_ID> define_function_params() <START_BLOCK> (<EOL>)*
+        (define_function_block() (<EOL>)*)+
+    <END_BLOCK> <EOL>
 }
+
+void declare_condition():
+{}
+{
+  <IF> define_conditional_params() <START_BLOCK> (<EOL>)*
+    (define_function_block() (<EOL>)*)+
+  (<ELSEIF> define_conditional_params() <START_BLOCK> (<EOL>)*
+    (define_function_block() (<EOL>)*)+
+  )*
+  (<ELSE> <START_BLOCK> (<EOL>)*
+    (define_function_block() (<EOL>)*)+
+  )?
+  <END_BLOCK> <EOL>
+}
+
+// Etc.
 
 void assing_constant () :
 {}
 {
-     <ASSING> expression() <EOL>
+    <ASSING> expression() <EOL>
 }
 
-void call_constant_or_function () :
+void call_function () :
 {}
 {
-     <GENERIC_ID> (declare_params())*
+    (define_function_params())+
 }
