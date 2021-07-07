@@ -125,7 +125,9 @@ SimpleNode Main() :
 void expression():
 {}
 {
-    declare_types()
+    LOOKAHEAD(2) math_expression()
+| 	LOOKAHEAD(2) logic_expression() 
+|   declare_types()
 |   declare_list()
 |   declare_lambda_function()
 |   <GENERIC_ID> (call_function())?
@@ -227,3 +229,47 @@ void call_function () :
 {
     (define_function_params())+
 }
+
+void logic_expression(): { }
+{
+  (<NUMBER> | <GENERIC_ID>)(logic_operator()(<NUMBER> | <GENERIC_ID>))+
+}
+
+void math_expression(): { }
+{
+   priority_expression()
+|  (<NUMBER> | <GENERIC_ID>)(math_operator()(priority_expression() |  <NUMBER> | <GENERIC_ID> ))+
+}
+
+void priority_expression(): { }
+{
+  <START_PARAM>math_expression()<END_PARAM>
+}
+
+
+void math_operator(): { }
+{
+	<SUM>
+| <SUBTRACT>
+| <MULTIPLY>
+| <DIVIDE>
+}
+
+void logic_operator(): { }
+{
+	<GREATER>
+|	<SMALLER>
+|	<GREATER_OR_EQUAL>
+|	<SMALLER_OR_EQUAL>
+|	<DIFFERENT>
+|	<EQUAL>
+}
+
+
+
+
+
+
+
+
+

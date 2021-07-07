@@ -14,8 +14,8 @@
 - [x] Lambda Functions (Multiple lines)
 - [x] Pipe Operator
 - [x] If/Else
-- [ ] Logical Expression
-- [ ] Mathematical Expression
+- [x] Logical Expression
+- [x] Mathematical Expression
 - [ ] List.map
 - [ ] List.reduce
 - [ ] Pattern Matching (?)
@@ -100,8 +100,16 @@ module MyFirstApplication
 
 ##### Expressions and Statements
 - `<STATMENT>`   ::= `?`
-- `<EXPRESSION>` ::= `?`
+- `<EXPRESSION>` ::= `<MATH_EXPRESSION> | <LOGIC_EXPRESSION>`
 
+##### Mathematic Expressions
+- `<MATH_EXPRESSION>` ::= `<PRIORITY_EXPRESSION> | <NUMBER><MATH_OPERATOR><NUMBER> | <GENERIC_ID><MATH_OPERATOR><GENERIC_ID>`
+- `<PRIORITY_EXPRESSION>` ::= `<START_PARAM><MATH_EXPRESSION><END_PARAM>`
+- `<MATH_OPERATOR>` ::= `<SUM> | <SUBTRACT> | <MULTIPLY> | <DIVIDE>`
+
+##### Logical Expressions
+- `<LOGIC_EXPRESSION>` ::= `<PRIORITY_EXPRESSION> | <NUMBER><LOGIC_OPERATOR><NUMBER> | <GENERIC_ID><LOGIC_OPERATOR><GENERIC_ID>`
+- `<LOGIC_OPERATOR>` ::= `<EQUAL> | <DIFERENT> | <GREATER> | <SMALLER> | <GREATER_OR_EQUAL> | <SMALLER_OR_EQUAL>`
 
 ## Guide
 
