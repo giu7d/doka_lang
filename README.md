@@ -18,6 +18,7 @@
 - [x] Mathematical Expression
 - [ ] List.map
 - [ ] List.reduce
+- [ ] Errors handling
 - [ ] Pattern Matching (?)
 - [ ] IO module (?)
  
@@ -100,7 +101,13 @@ module MyFirstApplication
 
 ##### Expressions and Statements
 - `<STATMENT>`   ::= `?`
-- `<EXPRESSION>` ::= `<MATH_EXPRESSION> | <LOGIC_EXPRESSION>`
+- `<EXPRESSION>` ::= `<ID> <ASSIGNMENT_EXPRESSION> | <?>`
+- `<ASSIGNMENT_EXPRESSION>` ::= `<ASSIGN_VALUE>` | `<ASSIGN_OPERATION>`
+- `...`
+
+##### Relational Expressions
+- `<RELATIONAL_EXPRESSION>` ::= `<?>`
+- `<RELATIONAL_OPERATOR>` ::= `<GREATER>| <SMALLER>| <GREATER_OR_EQUAL> | <SMALLER_OR_EQUAL> | <DIFFERENT> | <EQUAL>`
 
 ##### Mathematic Expressions
 - `<MATH_EXPRESSION>` ::= `<PRIORITY_EXPRESSION> | <NUMBER><MATH_OPERATOR><NUMBER> | <GENERIC_ID><MATH_OPERATOR><GENERIC_ID>`
@@ -108,8 +115,13 @@ module MyFirstApplication
 - `<MATH_OPERATOR>` ::= `<SUM> | <SUBTRACT> | <MULTIPLY> | <DIVIDE>`
 
 ##### Logical Expressions
-- `<LOGIC_EXPRESSION>` ::= `<NUMBER><LOGIC_OPERATOR><NUMBER> | <GENERIC_ID><LOGIC_OPERATOR><GENERIC_ID>`
-- `<LOGIC_OPERATOR>` ::= `<EQUAL> | <DIFERENT> | <GREATER> | <SMALLER> | <GREATER_OR_EQUAL> | <SMALLER_OR_EQUAL>`
+- `<LOGIC_EXPRESSION>` ::= `<?><LOGIC_OPERATOR><?>`
+- `<LOGIC_OPERATOR>` ::= `<AND> | <OR>`
+
+## Things to fix
+- `Add logical operations and fix logical and relational expressions(in progress)`
+- `mathematical expressions after parentheses`
+- `fix the parentheses conflict between math expression and declare lambda function(short syntax)`
 
 ## Guide
 
@@ -169,3 +181,4 @@ module MyFirstApplication
         ...
     end
     ```
+
