@@ -58,7 +58,9 @@ TOKEN : {
 
 // Operators
 TOKEN : {
-	<SUM: "+">
+    <AND: "&&">
+|   <OR: "|" >
+| 	<SUM: "+">
 |	<SUBTRACT: "-">
 |	<MULTIPLY: "*">
 |	<DIVIDE: "/">
@@ -155,7 +157,6 @@ void declare_condition():
   <END_BLOCK> <EOL>
 }
 
-
 void assign_constant () :
 {}
 {
@@ -167,7 +168,6 @@ void assign_operation () :
 {
     <ASSIGN_OPERATION> operative_expression() <EOL>
 }
-
 
 void call_function () :
 {}
@@ -202,17 +202,15 @@ void declarative_expression(): { }
 void operative_expression(): {}
 {
    math_expression()
-//| 	LOOKAHEAD(2) logic_expression() 
 }
 
-void logic_expression(): { }
+void relational_expression(): { }
 {
-  (<NUMBER> | <GENERIC_ID>)(logic_operator()(<NUMBER> | <GENERIC_ID>))+
+  (<NUMBER> | <GENERIC_ID>)(relational_operator()(<NUMBER> | <GENERIC_ID>))+
 }
 
 void math_expression(): { }
 {
-
    priority_expression()
 |  (<NUMBER> | <GENERIC_ID>)(math_operator()(priority_expression() |  <NUMBER> | <GENERIC_ID> ))+
 }
@@ -239,7 +237,7 @@ void define_function_params():
 void define_conditional_params():
 {}
 {
-   <START_PARAM> logic_expression()  <END_PARAM>
+   <START_PARAM> relational_expression()(logic_operator()relational_expression())*  <END_PARAM>
 }
 
 // DECLARATIONS
@@ -278,8 +276,7 @@ void math_operator(): { }
 | < REST >
 }
 
-// ALTER TO RELATIONAL OPERATORS
-void logic_operator(): { }
+void relational_operator(): { }
 {
 	<GREATER>
 |	<SMALLER>
@@ -287,6 +284,12 @@ void logic_operator(): { }
 |	<SMALLER_OR_EQUAL>
 |	<DIFFERENT>
 |	<EQUAL>
+}
+
+void logic_operator(): { }
+{
+	<AND>
+|	<OR>
 }
 
 
