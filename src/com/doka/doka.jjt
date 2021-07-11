@@ -149,6 +149,12 @@ TOKEN : {
 |   <ELSEIF: "else if">
 }
 
+// Modules
+TOKEN : {
+    <IO_MODULE: "IO">
+|   <LIST_MODULE: "List">
+}
+
 // Operators
 TOKEN : {
     <AND: "&&">
@@ -192,7 +198,7 @@ TOKEN : {
 // IDs
 TOKEN : {
     <MODULE_ID: (<UPPER_CASE_CHAR>(<UPPER_CASE_CHAR> | <LOWER_CASE_CHAR> | <DIGIT>)*)>
-|   <GENERIC_ID: (<ID_CHAR> (<ID_CHAR> | <DIGIT>)* | (<DOT> (<ID_CHAR> | <DIGIT>)+)+)>
+|   <GENERIC_ID: (<ID_CHAR> (<ID_CHAR> | <DIGIT>)*)>
 }
 
 // Types
@@ -222,15 +228,17 @@ void define_module_block():
 {
     declare_function()
 |   declare_condition()
+|   call_module()
 |   <GENERIC_ID> (assign_constant() | assign_operation() | call_function())?
 }
 
 void define_function_block():
 {}
 {
-    <GENERIC_ID > ( assign_constant() | assign_operation())
+    <PIPE> define_function_block()
 |   declare_condition()
-|   <PIPE> define_function_block()
+|   call_module()
+|   <GENERIC_ID> (assign_constant() | assign_operation() | call_function())?
 }
 
 // Declarative Structures
@@ -274,6 +282,13 @@ void call_function () :
     (define_function_params())+
 }
 
+void call_module():
+{}
+{
+    <LIST_MODULE> <DOT> <GENERIC_ID> call_function()
+|   <IO_MODULE> <DOT> <GENERIC_ID> call_function()
+}
+
 // Expressions
 void expression():
 {}
@@ -285,8 +300,10 @@ void expression():
 void callable_expression():
 {}
 {
-    <GENERIC_ID> (call_function())?
+    <GENERIC_ID> (call_function())*
+|   call_module()
 }
+
 
 void declarative_expression():
 {}
@@ -296,23 +313,30 @@ void declarative_expression():
 |   declare_lambda_function()
 }
 
+void declarative_relational_expression():
+{}
+{
+    declare_types()
+|   callable_expression()
+}
+
 void relational_expression():
 {}
 {
    define_expression_priority()
-|  expression()(logical_expression() | mathematical_expression())
+|  declarative_relational_expression()(logical_expression() | mathematical_expression())
 }
 
 void logical_expression():
 {}
 {
-  logic_operator() (expression() | define_expression_priority())+
+  logic_operator() (declarative_relational_expression() | define_expression_priority())+
 }
 
 void mathematical_expression():
 {}
 {
-  math_operator()(expression() | define_expression_priority())+
+  math_operator()(declarative_relational_expression() | define_expression_priority())+
 }
 
 

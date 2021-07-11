@@ -4,7 +4,7 @@ module MyFirstApplication
 
     grade_1 = 10.0
     grade_2 = 9.2
-    grade_3 = 6.5
+    grade_3 = 6.50
     grade_4 = 7
 
     test_calc_1 -> 5 + 2
@@ -16,16 +16,27 @@ module MyFirstApplication
     test_logic_1 -> grade_1 && grade_2
     test_logic_2 -> grade_1 < grade_2
     test_logic_3 -> grade_1 < (grade_2 == grade_3)
-    test_logic_4 -> (grade_1 && (grade_2 != grade_3))
+    test_logic_4 -> (grade_1 && (grade_2() != grade_3))
     test_logic_5 -> (1 + 5) || (grade_2 && (10 < 5))
 
     all_grades = [grade_1, grade_2, grade_3, grade_4, 5.2]
 
     hello = world()
 
-    test_func_1 =: (a, b) => a + b end
-    test_func_2 =: (a, b) => something(a, b) end
-    test_func_3 =: (a, b) =>
+    IO.out(calc_average(all_grades))
+
+    List.map(arr, :(el) =>
+        IO.out(el)
+    end)
+
+    test_func_1 =: (a, b) =>
+        List.map(arr, :(el) =>
+            IO.out(el)
+        end)
+    end
+    test_func_2 =: (a, b) => a + b end
+    test_func_3 =: (a, b) => something(a, b) end
+    test_func_4 =: (a, b) =>
         a < b
     end
     test_func_5 =: (a, b) =>
