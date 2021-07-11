@@ -216,8 +216,7 @@ SimpleNode Main() :
     }
 }
 
-// Blocs
-
+// Blocks
 void define_module_block():
 {}
 {
@@ -266,7 +265,7 @@ void assign_constant () :
 void assign_operation () :
 {}
 {
-    <ASSIGN_OPERATION> start_expression() <EOL>
+    <ASSIGN_OPERATION> relational_expression() <EOL>
 }
 
 void call_function () :
@@ -276,12 +275,11 @@ void call_function () :
 }
 
 // Expressions
-
 void expression():
 {}
 {
-   declarative_expression()
-|   callable_expression()  
+    declarative_expression()
+|   callable_expression()
 }
 
 void callable_expression():
@@ -298,30 +296,32 @@ void declarative_expression():
 |   declare_lambda_function()
 }
 
-
-void start_expression(): { }
+void relational_expression():
+{}
 {
-   priority_expression()
-|  (<NUMBER> | <GENERIC_ID>)(relational_expression() | math_expression())
+   define_expression_priority()
+|  expression()(logical_expression() | mathematical_expression())
+}
+
+void logical_expression():
+{}
+{
+  logic_operator() (expression() | define_expression_priority())+
+}
+
+void mathematical_expression():
+{}
+{
+  math_operator()(expression() | define_expression_priority())+
 }
 
 
-void priority_expression(): { }
+// Definitions
+void define_expression_priority():
+{}
 {
-  <START_PARAM>start_expression()<END_PARAM>(relational_expression() | math_expression())?
+  <START_PARAM> relational_expression() <END_PARAM>(logical_expression() | mathematical_expression())?
 }
-
-void relational_expression(): { }
-{
-  (relational_operator()(<NUMBER> | <GENERIC_ID>))+
-}
-
-void math_expression(): { }
-{
-  (math_operator()(<NUMBER> | <GENERIC_ID>))+
-}
-
-// DEFINITIONS
 
 void define_expression_list():
 {}
@@ -338,11 +338,10 @@ void define_function_params():
 void define_conditional_params():
 {}
 {
-   <START_PARAM> start_expression()(logic_operator()start_expression())*  <END_PARAM>
+   <START_PARAM> relational_expression()(logic_operator()relational_expression())*  <END_PARAM>
 }
 
 // Declarations
-
 void declare_list():
 {}
 {
@@ -352,7 +351,6 @@ void declare_list():
 void declare_lambda_function():
 {}
 {
-     //define_function_params() <ARROW> expression()(<PIPE> expression())*
      <START_BLOCK> define_function_params() <ARROW> (<EOL>)*
         (define_function_block() (<EOL>)*)+
      <END_BLOCK>
@@ -367,7 +365,6 @@ void declare_types():
 }
 
 // Operators
-
 void math_operator():
 {}
 {
@@ -383,12 +380,7 @@ void logic_operator():
 {
 	<AND>
 |	<OR>
-}
-
-void relational_operator():
-{}
-{
- 	<GREATER>
+|   <GREATER>
 |	<SMALLER>
 |	<GREATER_OR_EQUAL>
 |	<SMALLER_OR_EQUAL>
