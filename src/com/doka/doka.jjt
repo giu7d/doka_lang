@@ -262,11 +262,11 @@ void assign_constant () :
 {
     <ASSIGN_VALUE> expression() <EOL>
 }
- 
+
 void assign_operation () :
 {}
 {
-    <ASSIGN_OPERATION> operative_expression() <EOL>
+    <ASSIGN_OPERATION> start_expression() <EOL>
 }
 
 void call_function () :
@@ -280,8 +280,8 @@ void call_function () :
 void expression():
 {}
 {
-  	declarative_expression()
-|   callable_expression()
+   declarative_expression()
+|   callable_expression()  
 }
 
 void callable_expression():
@@ -298,16 +298,17 @@ void declarative_expression():
 |   declare_lambda_function()
 }
 
-void operative_expression():
-{}
-{
-   math_expression()
-}
 
 void start_expression(): { }
 {
    priority_expression()
 |  (<NUMBER> | <GENERIC_ID>)(relational_expression() | math_expression())
+}
+
+
+void priority_expression(): { }
+{
+  <START_PARAM>start_expression()<END_PARAM>(relational_expression() | math_expression())?
 }
 
 void relational_expression(): { }
@@ -317,12 +318,7 @@ void relational_expression(): { }
 
 void math_expression(): { }
 {
- (math_operator()(priority_expression() |  <NUMBER> | <GENERIC_ID> ))+
-}
-
-void priority_expression(): { }
-{
-  <START_PARAM>start_expression()<END_PARAM>(relational_expression())?
+  (math_operator()(<NUMBER> | <GENERIC_ID>))+
 }
 
 // DEFINITIONS
@@ -342,7 +338,7 @@ void define_function_params():
 void define_conditional_params():
 {}
 {
-   <START_PARAM> (start_expression())(logic_operator()start_expression())*  <END_PARAM>
+   <START_PARAM> start_expression()(logic_operator()start_expression())*  <END_PARAM>
 }
 
 // Declarations
@@ -382,22 +378,22 @@ void math_operator():
 |   <REST>
 }
 
-void relational_operator():
-{}
-{
-	<GREATER>
-|	<SMALLER>
-|	<GREATER_OR_EQUAL>
-|	<SMALLER_OR_EQUAL>
-|	<DIFFERENT>
-|	<EQUAL>
-}
-
 void logic_operator():
 {}
 {
 	<AND>
 |	<OR>
+}
+
+void relational_operator():
+{}
+{
+ 	<GREATER>
+|	<SMALLER>
+|	<GREATER_OR_EQUAL>
+|	<SMALLER_OR_EQUAL>
+|	<DIFFERENT>
+|	<EQUAL>
 }
 
 
