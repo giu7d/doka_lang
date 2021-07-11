@@ -4,40 +4,133 @@ options {
 
 PARSER_BEGIN(Doka)
 
+import javax.swing.*;
+import java.io.*;
+
 public class Doka {
 
-  /** Main entry point. */
-  public static void main(String args[]) throws ParseException {
-    Doka parser = new Doka(System.in);
+    private static Boolean displayTree = false;
 
-    System.out.println("------------------------");
-    System.out.println("\") Doka Language ");
-    System.out.println("\tv0.0.1");
-    System.out.println("------------------------");
-    System.out.println("\nListen for input...\n");
+    public static void main(String args[]) throws ParseException {
 
-    while (true) {
+        System.out.println("------------------------");
+        System.out.println("\") Doka Language ");
+        System.out.println("\tv0.0.1");
+        System.out.println("------------------------\n");
 
-        try{
-            SimpleNode tree = parser.Main();
-            tree.dump(" ");
-            /**
-                if (parser.Main()) {
-                    System.out.println("OK");
-                } else {
-                    System.out.println("Bye!");
-                    System.exit(0);
-                }
-            */
-
-        } catch (Exception e) {
-                System.out.println("NOT OK");
-                System.out.println(e.getMessage());
-                Doka.ReInit(System.in);
+        if (args.length == 0) {
+            System.out.println(
+                "doka <params>\n\n" +
+                "Examples:\n" +
+                "\tdoka ./example.dk\tUse path to load file\n" +
+                "\tdoka -i\t\t\tUse GUI to load file\n" +
+                "\tdoka -c\t\t\tUse interpreter mode\n" +
+                "\tdoka -t <params>\tDisplay parse tree\n" +
+                "\tdoka -t ./example.dk\tDisplay parse tree in file mode\n" +
+                "\tdoka -t -c\t\tDisplay parse tree in interpreter mode\n" +
+                "\tdoka -t -i\t\tDisplay parse tree in GUI mode\n"
+            );
+            return;
         }
 
+        try {
+            for (String arg : args) {
+                if (arg.equals("-t")) {
+                    System.out.println(">\tUsing display parse tree [-t]");
+                    displayTree = true;
+                } else if (arg.equals("-c")) {
+                    System.out.println(">\tUsing CLI interpreter [-c]");
+                    parseInputStream();
+                } else if (arg.equals("-i")) {
+                    System.out.println(">\tUsing interface [-i]");
+                    String path = Doka.getFilePathFromUI();
+                    parseFileStream(path);
+                } else if (arg.matches("(.*).dk")) {
+                    System.out.printf(">\tUsing File [%s]\n", arg);
+                    File file = new File(arg);
+                    parseFileStream(file.getAbsolutePath());
+                } else {
+                    System.out.println(
+                        "doka <params>\n\n" +
+                        "Examples:\n" +
+                        "\tdoka ./example.dk\tUse path to load file\n" +
+                        "\tdoka -i\t\t\tUse GUI to load file\n" +
+                        "\tdoka -c\t\t\tUse interpreter mode\n" +
+                        "\tdoka -t <params>\tDisplay parse tree\n"
+                    );
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(":Error");
+            System.out.println(e.getMessage());
+        }
     }
-  }
+
+    public static void parseFileStream(String path) {
+        try {
+            System.out.println(">\tParsing...");
+            BufferedReader fileBuffer = Doka.getFileBuffer(path);
+            Doka parser = new Doka(fileBuffer);
+            SimpleNode tree = parser.Main();
+            showTree(tree);
+        } catch (ParseException e) {
+            System.out.println(":Error:Parser");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(":Error");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void parseInputStream() {
+        Doka parser = new Doka(System.in);
+        System.out.println(">\tListen for input...\n");
+
+        while (true) {
+            try{
+                SimpleNode tree = parser.Main();
+                showTree(tree);
+            } catch (Exception e) {
+                System.out.println(":Error");
+                System.out.println(e.getMessage());
+                Doka.ReInit(System.in);
+            }
+        }
+    }
+
+    public static void showTree(SimpleNode tree) {
+        if (displayTree) {
+            System.out.println(">\tParse tree");
+            tree.dump("\t|\t");
+        }
+    }
+
+    public static BufferedReader getFileBuffer(String path){
+        BufferedReader buffer;
+
+        try {
+
+            System.out.println(">\tReading File");
+            File file  = new File(path);
+            FileReader reader = new FileReader(file);
+            buffer = new BufferedReader(reader);
+        } catch (IOException e) {
+            buffer = null;
+            System.out.println(":Error:IO:getFileBuffer");
+            System.out.println(e.getMessage());
+        }
+
+        return buffer;
+    }
+
+    public static String getFilePathFromUI() {
+        JFileChooser chooseFile = new JFileChooser();
+        chooseFile.showOpenDialog(null);
+        String path = chooseFile.getSelectedFile().getAbsolutePath();
+        System.out.println(">\tLoad file: " + path);
+        return path;
+    }
+
 }
 
 PARSER_END(Doka)

@@ -3,4 +3,4 @@ javacc -STATIC=true -OUTPUT_DIRECTORY=out out/doka.jj &&
 
 cd out &&
 javac *.java &&
-java Doka
+java Doka "$@"

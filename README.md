@@ -1,5 +1,16 @@
 # Doka Language
 
+## How to use
+
+```
+./start.sh ../example.dk      Use path to load file
+./start.sh -i                 Use GUI to load file
+./start.sh -c                 Use interpreter mode
+./start.sh -t <params>        Display parse tree
+./start.sh -t ../example.dk   Display parse tree in file mode
+./start.sh -t -c              Display parse tree in interpreter mode
+./start.sh -t -i              Display parse tree in GUI mode
+```
 
 ## Features
 
@@ -126,30 +137,30 @@ module MyFirstApplication
 ## Guide
 
 ### 1. Create a module
-    ```
+```
     module MyApplication
-    ```
+```
    
 ### 2. Define a constant
-    ```
+```
     hello = "world"
    
     # or define a list
 
     my_list = [1, "foo", hello, true, [10, 1.8, "bars"], []]
-    ```
+```
 
 ### 3.  Function
-    ```
+```
     fun calc(data):
         ...do something..
     end 
    
     calc()  # call function
-    ```
+```
    
 #### 3.1 Lambda function
-    ```
+```
     sum = (a1, a2) => a1 + a2
     sum(2,2) # returns 4    
    
@@ -159,20 +170,20 @@ module MyFirstApplication
     end
 
     add(2) # returns 4
-    ```
+```
 
 #### 3.2 Pipe Operator (Works with every function)
-    ```
+```
     processData =: (data) => 
         data
         |> doProcess1()
         |> doProcess2()
     end
-    ```
+```
 
 #### 4 Conditions
 
-    ```
+```
     if (expr):
         ...
     else if (expr2):
@@ -180,5 +191,5 @@ module MyFirstApplication
     else:
         ...
     end
-    ```
+```
 
