@@ -1,3 +1,52 @@
 module MyFirstApplication
-    arr = [1, 2, 3, 4]
-    function(calc_average,arr)
+
+    title = "The average grade is"
+
+    grade_1 = 10.0
+    grade_2 = 9.2
+    grade_3 = 6.5
+    grade_4 = 7
+
+    test_calc_1 -> 5 + 2
+    test_calc_2 -> 2 + (3 * 4)
+    test_calc_3 -> 2 + (3 * 4) / 10
+    test_calc_4 -> (3 * 14) / 5
+    test_calc_5 -> grade_1 * grade_2 / 5
+
+    test_logic_1 -> grade_1 && grade_2
+    test_logic_2 -> grade_1 < grade_2
+    test_logic_3 -> grade_1 < (grade_2 == grade_3)
+    test_logic_4 -> grade_1 && (grade_2 != grade_3)
+    test_logic_5 -> (1 + 5) || grade_2 && (10 < 5)
+
+    all_grades = [grade_1, grade_2, grade_3, grade_4, 5.2]
+
+    sum =: (a, b) => something(a, b) end
+    divide =: (a, b) => something(a, b) end
+
+    fun calc_average(data):
+        List.reduce(0, sum)
+        |> divide(List.length, data)
+    end
+
+    fun just_an_if(something):
+        if(something >= 10):
+            IO.out("Something")
+        else if(15 == something):
+            IO.out("Something")
+        else if(15 != (something * 2)):
+            IO.out("Something")
+        else:
+            IO.out(2/10)
+        end
+    end
+
+    IO.out(title)
+    IO.out(calc_average(all_grades))
+
+    just_an_if(grade[1])
+
+    IO.out("The items where:")
+    List.map(arr, :(el) =>
+        IO.out(el)
+    end)

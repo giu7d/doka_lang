@@ -152,7 +152,7 @@ TOKEN : {
 // Operators
 TOKEN : {
     <AND: "&&">
-|   <OR: "|" >
+|   <OR: "||" >
 | 	<SUM: "+">
 |	<SUBTRACT: "-">
 |	<MULTIPLY: "*">
@@ -164,7 +164,7 @@ TOKEN : {
 |	<SMALLER: "<">
 |	<GREATER_OR_EQUAL: "<=" >
 |	<SMALLER_OR_EQUAL: ">=" >
-|	<DIFFERENT: "==!">
+|	<DIFFERENT: "!=">
 |	<EQUAL: "==">
 |	<PIPE: "|>">
 }
