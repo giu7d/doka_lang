@@ -123,7 +123,7 @@ SimpleNode Main() :
     }
 }
 
-// MODULE BLOCK
+// Blocs
 
 void define_module_block():
 {}
@@ -133,7 +133,15 @@ void define_module_block():
 |   <GENERIC_ID> (assign_constant() | assign_operation() | call_function())?
 }
 
-// DECLARATIVE STRUCTURES
+void define_function_block():
+{}
+{
+    <GENERIC_ID > ( assign_constant() | assign_operation())
+|   declare_condition()
+|   <PIPE> define_function_block()
+}
+
+// Declarative Structures
 
 void declare_function():
 {}
@@ -160,7 +168,7 @@ void declare_condition():
 void assign_constant () :
 {}
 {
-    <ASSIGN_VALUE> declarative_expression() <EOL>
+    <ASSIGN_VALUE> expression() <EOL>
 }
 
 void assign_operation () :
@@ -175,52 +183,55 @@ void call_function () :
     (define_function_params())+
 }
 
-void define_function_block():
-{}
-{
-    <GENERIC_ID > ( assign_constant() | assign_operation())
-|   declare_condition()
-|   <PIPE> define_function_block()
-}
-
-// EXPRESSIONS
+// Expressions
 
 void expression():
 {}
 {
   	declarative_expression()
-|   <GENERIC_ID> (call_function())?
+|   callable_expression()
 }
 
-void declarative_expression(): { }
+void callable_expression():
+{}
+{
+    <GENERIC_ID> (call_function())?
+}
+
+void declarative_expression():
+{}
 {
     declare_types()
 |   declare_list()
 |   declare_lambda_function()
 }
 
-void operative_expression(): {}
+void operative_expression():
+{}
 {
    math_expression()
 }
 
-void relational_expression(): { }
+void relational_expression():
+{}
 {
   (<NUMBER> | <GENERIC_ID>)(relational_operator()(<NUMBER> | <GENERIC_ID>))+
 }
 
-void math_expression(): { }
+void math_expression():
+{}
 {
    priority_expression()
 |  (<NUMBER> | <GENERIC_ID>)(math_operator()(priority_expression() |  <NUMBER> | <GENERIC_ID> ))+
 }
 
-void priority_expression(): { }
+void priority_expression():
+{}
 {
   <START_PARAM>math_expression()<END_PARAM>
 }
 
-// DEFINITIONS
+// Definitions
 
 void define_expression_list():
 {}
@@ -240,7 +251,7 @@ void define_conditional_params():
    <START_PARAM> relational_expression()(logic_operator()relational_expression())*  <END_PARAM>
 }
 
-// DECLARATIONS
+// Declarations
 
 void declare_list():
 {}
@@ -265,18 +276,20 @@ void declare_types():
 |   <BOOLEAN>
 }
 
-// OPERATOR GROUPS 
+// Operators
 
-void math_operator(): { }
+void math_operator():
+{}
 {
-	<SUM>
-| <SUBTRACT>
-| <MULTIPLY>
-| <DIVIDE>
-| < REST >
+    <SUM>
+|   <SUBTRACT>
+|   <MULTIPLY>
+|   <DIVIDE>
+|   <REST>
 }
 
-void relational_operator(): { }
+void relational_operator():
+{}
 {
 	<GREATER>
 |	<SMALLER>
@@ -286,7 +299,8 @@ void relational_operator(): { }
 |	<EQUAL>
 }
 
-void logic_operator(): { }
+void logic_operator():
+{}
 {
 	<AND>
 |	<OR>
