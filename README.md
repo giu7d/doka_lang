@@ -27,11 +27,11 @@
 - [x] If/Else
 - [x] Logical Expression
 - [x] Mathematical Expression
-- [ ] List.map
-- [ ] List.reduce
+- [x] List.map
+- [x] List.reduce
+- [x] IO module
 - [ ] Errors handling
 - [ ] Pattern Matching (?)
-- [ ] IO module (?)
  
 ## Specifications
 
