@@ -1,0 +1,42 @@
+module Constants
+
+    string_example    = "The average grade is"
+    integer_example   = 10
+    boolean_example   = true
+    float_example_0   = 4.5
+    float_example_1   = 4.25
+
+    math_example_0 = 5 + 2
+    math_example_0 = 5 - 2
+    math_example_1 = 2 + (3 * 4)
+    math_example_2 = (2 + (3 * 4)) / 10
+    math_example_3 = (3 * 14) / 5
+    math_example_4 = some_var * (some_var / 5)
+
+    logic_example_0 = ex1 && ex2
+    logic_example_1 = ex1() < ex2
+    logic_example_2 = ex1 < (ex2 == true)
+    logic_example_3 = (ex1 && (ex2() != ex3))
+    logic_example_4 = (1 + 5) || (ex2 && (10 < 5))
+
+    list_example = [ex1, false, ex3, ex4, 5.2,[1, "ex"]]
+
+    func_result_example = world()
+
+    func_example_1 =: (a, b) -> 2 + 2 end
+
+    func_example_0 =: (a, b) ->
+        List.map(arr, :(el) ->
+            IO.out(el)
+        end)
+    end
+
+    test_func_2 =: (a, b) -> a end
+
+    test_func_3 =: (a, b) -> something(a, b) end
+    test_func_4 =: (a, b) ->
+        a < b
+    end
+
+    test_func_5 =: (a, b) -> :(two) -> a < b end end
+

@@ -1,0 +1,100 @@
+module MyFirstApplication
+
+    title = "The average grade is"
+
+    grade_1 = 10.0
+    grade_2 = 9.2
+    grade_3 = 6.50
+    grade_4 = 7
+
+    test_calc_1 = 5 + 2
+    test_calc_2 = 2 + (3 * 4)
+    test_calc_3 = 2 + (3 * 4) / 10
+    test_calc_4 = (3 * 14) / 5
+    test_calc_5 = grade_1 * (grade_2 / 5)
+
+    test_logic_1 = grade_1 && grade_2
+    test_logic_2 = grade_1 < grade_2
+    test_logic_3 = grade_1 < (grade_2 == grade_3)
+    test_logic_4 = (grade_1 && (grade_2() != grade_3))
+    test_logic_5 = (1 + 5) || (grade_2 && (10 < 5))
+
+    all_grades = [grade_1, grade_2, grade_3, grade_4, 5.2]
+
+    hello = world()
+
+    IO.out(calc_average(all_grades))
+
+    List.map(arr, :(el) ->
+        IO.out(el)
+    end)
+
+    test_func_1 =: (a, b) ->
+        List.map(arr, :(el) ->
+            IO.out(el)
+        end)
+    end
+    test_func_2 =: (a, b) -> a + b end
+    test_func_3 =: (a, b) -> something(a, b) end
+    test_func_4 =: (a, b) ->
+        a < b
+    end
+    test_func_5 =: (a, b) ->
+        :(two) ->
+            a < b
+         end
+    end
+
+
+    fun calc_average(data):
+        <-  hello(0, sum)
+            |> divide(data)
+    end
+
+    fun calc_average(data):
+        <-  data
+            |> divide(data)
+    end
+
+    fun just_an_if(something):
+        if(something >= 10):
+            <- IO.out("Something")
+        else if(15 == something):
+            <- IO.out("Something")
+        else if(15 != (something * 2)):
+            <- IO.out("Something")
+        else:
+            <- IO.out(2/10)
+        end
+    end
+
+
+    fun just_an_if():
+        something = true
+
+        if(something >= 10):
+            <- IO.out("Something")
+        else if(15 == something):
+            <- IO.out("Something")
+        else if(15 != (something * 2)):
+            <- IO.out("Something")
+        else:
+            <- IO.out(2/10)
+        end
+    end
+
+    IO.out(title)
+    IO.out(calc_average(all_grades))
+
+    just_an_if(grade[1])
+
+    IO.out("The items where:")
+
+    List.map(arr, :(el) ->
+        IO.out(el)
+    end)
+
+    just_an_if(grade[1])
+    just_an_if(grade[1])(data)
+
+

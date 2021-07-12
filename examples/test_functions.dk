@@ -1,0 +1,55 @@
+module Functions
+
+    fun test_function_0(data):
+        <- data
+    end
+
+    fun test_function_1(a, b):
+        <- (a + b) * 2
+    end
+
+
+    fun test_function_3(a):
+        <-  sum(0, a)
+    end
+
+    fun test_function_4(a, b):
+        <-  sum(0, a)
+            |> divide(b)
+    end
+
+    fun test_function_5(data):
+        <-  data
+            |> divide(data)
+    end
+
+    fun test_function_6(a):
+        if(a >= 10):
+            <- IO.out("HELLO")
+        else if(15 == a):
+            <- IO.out("WORLD")
+        else if(15 != (a * 2)):
+            <- IO.out("HELLO, WORLD")
+        else:
+            <- IO.out(5 / 10)
+        end
+    end
+
+
+    fun test_function_7():
+        something = true
+
+        if(something >= 10):
+            <- IO.out("Something")
+        else if(15 == something):
+            <- IO.out("Something")
+        else if(15 != (something * 2)):
+            <- IO.out("Something")
+        else:
+            <- IO.out(2/10)
+        end
+    end
+
+
+    call_a_function()
+    call_with_callback()()

@@ -3,13 +3,13 @@
 ## How to use
 
 ```
-./start.sh ../example.dk      Use path to load file
-./start.sh -i                 Use GUI to load file
-./start.sh -c                 Use interpreter mode
-./start.sh -t <params>        Display parse tree
-./start.sh -t ../example.dk   Display parse tree in file mode
-./start.sh -t -c              Display parse tree in interpreter mode
-./start.sh -t -i              Display parse tree in GUI mode
+./start.sh ../examples/test_all.dk          Use path to load file
+./start.sh -i                               Use GUI to load file
+./start.sh -c                               Use interpreter mode
+./start.sh -t <params>                      Display parse tree
+./start.sh -t ../examples/test_all.dk       Display parse tree in file mode
+./start.sh -t -c                            Display parse tree in interpreter mode
+./start.sh -t -i                            Display parse tree in GUI mode
 ```
 
 ## Features
