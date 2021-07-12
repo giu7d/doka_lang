@@ -65,7 +65,7 @@ public class Doka {
             System.out.println(e.getMessage());
         }
     }
-
+ 
     public static void parseFileStream(String path) {
         try {
             System.out.println(">\tParsing...");
@@ -74,10 +74,13 @@ public class Doka {
             SimpleNode tree = parser.Main();
             showTree(tree);
         } catch (ParseException e) {
-            System.out.println(":Error:Parser");
+            System.out.println(">\tSyntatic Error");
+            System.out.println(e.getMessage());
+		} catch (TokenMgrError e) {
+            System.out.println(">\tLexical Error");
             System.out.println(e.getMessage());
         } catch (Exception e) {
-            System.out.println(":Error");
+            System.out.println(">\tError");
             System.out.println(e.getMessage());
         }
     }
@@ -391,6 +394,7 @@ void math_operator():
 |   <DIVIDE>
 |   <REST>
 }
+
 
 void logic_operator():
 {}
