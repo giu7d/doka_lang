@@ -2,9 +2,6 @@ module MyFirstApplication
 
     title = "The average grade is"
 
-		
-	5+3
-	
     grade_1 = 10.0
     grade_2 = 9.2
     grade_3 = 6.50

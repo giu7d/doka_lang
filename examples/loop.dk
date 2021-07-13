@@ -1,0 +1,30 @@
+module Loop
+    fun generate_list(size):
+        if (number == 1):
+            <- number
+        else:
+            <- [number]
+                |>  List.concat(generate_list(number-1))
+        end
+    end
+
+    output_list = generate_list(100)
+
+    List.map(output_list, :(el, index) ->
+        IO.out(index, ">", el)
+    end)
+
+    fun calc_average(data):
+        sum =: (a, b) -> a + b end
+        divide =: (a, b) -> a / b end
+
+        initial_value = 0
+
+        <-  List.reduce(data, :(acc, current) -> sum(acc, current) end , initial_value)
+            |> divide(List.length(data))
+    end
+
+    grades = [10.0, 8.9, 5, 7.9]
+
+    IO.out("The average is")
+    IO.out(calc_average(grades))

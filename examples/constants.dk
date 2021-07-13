@@ -1,0 +1,11 @@
+module Constants
+
+    string_example      = "The average grade is"
+    integer_example     = 10
+    boolean_example     = true
+    float_example       = 4.25
+    math_example        = (2 + (3 * integer_example)) / 10
+    logic_example       = (math_example % 2 == 0) && (some_function() != true)
+    list_example        = [string_example, [1, "ex"], integer_example, boolean_example, some_thing(), 5.2]
+    func_result_example = hello_world()
+

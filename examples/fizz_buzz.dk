@@ -1,0 +1,25 @@
+module FizzBuzz
+
+    fun generate_list(size):
+        if (number == 1):
+            <- number
+        else:
+            <- [number]
+                |>  List.concat(generate_list(number-1))
+        end
+    end
+
+    fun fizz_buzz(value):
+        if (value % 15 == 0):
+            <- "FizzBuzz"
+        else if (value % 5 == 0):
+            <- "Fizz"
+        else if (value % 3 == 0):
+            <- "Buzz"
+        end
+    end
+
+    input = generate_list(100)
+    output = List.map(input, fizz_buzz)
+
+    IO.out(output)

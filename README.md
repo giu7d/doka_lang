@@ -41,20 +41,22 @@
 1. Calculate the average of an array of numbers:
 
 ```
-module MyFirstApplication
-
-    arr = [1, 2, 3, 4]
-
-    sum = (a, b) => a + b
-    divide = (a, b) => a / b
+module CalculateAverage
 
     fun calc_average(data):
-        List.reduce 0, sum 
-        |> divide List.length data
-    end     
-    
-    IO.out "The avarage is"
-    IO.out calc_average arr
+        sum =: (a, b) -> a + b end
+        divide =: (a, b) -> a / b end
+
+        initial_value = 0
+
+        <-  List.reduce(data, :(acc, current) -> sum(acc, current) end , initial_value)
+            |> divide(List.length(data))
+    end
+
+    grades = [10.0, 8.9, 5, 7.9]
+
+    IO.out("The average is")
+    IO.out(calc_average(grades))
 ```
 
 ### Backus–Naur form

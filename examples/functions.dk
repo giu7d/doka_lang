@@ -1,0 +1,28 @@
+module Functions
+
+    fun match(el, expr):
+        if (regex(el, expr) == true):
+            <- el
+        end
+    end
+
+    filter =  :(expr) -> :(list) ->
+            List.map(list, :(el) ->
+                match(el, expr)
+            end)
+        end
+    end
+
+    input_list = [1, 2, 100, 34, "hello", "world"]
+
+    keep_numbers = filter("/\d/g")
+    only_number_list = keep_numbers(input_list)
+    IO.out(only_number_list)
+
+
+    only_string_list = filter("/[A-Za-z]/g")(input_list)
+    IO.out(only_string_list)
+
+
+
+
