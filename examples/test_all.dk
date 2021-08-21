@@ -1,14 +1,15 @@
 module MyFirstApplication
-	title = "The average grade is"
-	
-	grade_1 = 10.0
+
+    title = "The average grade is"
+
+    grade_1 = 10.0
     grade_2 = 9.2
     grade_3 = 6.50
     grade_4 = 7
 
-	test_calc_1 = 5 + 2
+    test_calc_1 = 5 + 2
     test_calc_2 = 2 + (3 * 4)
-	test_calc_3 = 2 + (3 * 4) / 10
+    test_calc_3 = 2 + (3 * 4) / 10
     test_calc_4 = (3 * 14) / 5
     test_calc_5 = grade_1 * (grade_2 / 5)
 
