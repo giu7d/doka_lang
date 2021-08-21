@@ -3,7 +3,7 @@ options {
 }
 
 PARSER_BEGIN(Doka)
-
+package parser;
 import javax.swing.*;
 import java.io.*;
 
@@ -65,7 +65,7 @@ public class Doka {
             System.out.println(e.getMessage());
         }
     }
- 
+
     public static void parseFileStream(String path) {
         try {
             System.out.println(">\tParsing...");
@@ -234,32 +234,28 @@ void block():
 |   module_statements()
 }
 
-void functinal_declaration_block():
-{}
-{
-    (block()(<EOL>)*)*
-    (declare_condition() | (<RETURN_ARROW> (return_expression()(<EOL>)*)+))
-}
-
 // Statements
 void declaration_statements():
 {}
 {
-    <GENERIC_ID> (declare_assigment() | callable_function_statements())
-|   declare_function()
+    id() (declare_assigment() | (declare_function_params())+)
+|   declare_function() | declare_condition()
 }
 
 void module_statements():
 {}
 {
-    <LIST_MODULE> <DOT> <GENERIC_ID> (declare_function_params())+
-|   <IO_MODULE> <DOT> <GENERIC_ID> (declare_function_params())+
+    <LIST_MODULE><DOT>id()declare_function_params()
+    | <IO_MODULE><DOT>id()module_io_params()
 }
 
-void callable_function_statements():
-{}
+void module_io_params():
 {
-    (declare_function_params())+
+}
+{
+    <START_PARAM>
+        common()(<COMMA>common())*
+    <END_PARAM>
 }
 
 // Declarations
@@ -267,21 +263,39 @@ void callable_function_statements():
 void declare_assigment():
 {}
 {
-    <ASSIGN> (expression())+ <EOL>
+    <ASSIGN>
+        (
+            common()
+            | expression()
+        )
+}
+
+void common():
+{}
+{
+    (id() ( callable_expression() | numerical_expression()  | logical_expression())*)
+        | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
+        | ((bool() | string() ) (logical_expression())*)
+}
+
+void id():
+{}
+{
+    <GENERIC_ID>
 }
 
 void declare_condition():
 {}
 {
   <IF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    functinal_declaration_block()(<EOL>)*
+    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
   (<ELSEIF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    functinal_declaration_block()(<EOL>)*
+    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
   )*
   (<ELSE> <START_BLOCK> (<EOL>)*
-    functinal_declaration_block()(<EOL>)*
+    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
   )?
-  <END_BLOCK> <EOL>
+  <END_BLOCK><EOL>
 }
 
 void declare_lambda_function():
@@ -295,27 +309,29 @@ void declare_lambda_function():
 void declare_function():
 {}
 {
-    <FUNCTION> <GENERIC_ID> declare_function_params() <START_BLOCK> (<EOL>)+
-       functinal_declaration_block()
-    <END_BLOCK> <EOL>
+    <FUNCTION> id() declare_function_params() <START_BLOCK> (<EOL>)+
+        (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?
+    <END_BLOCK>
 }
 
 void declare_list():
 {}
 {
-   <START_BRACKET> (list_expression())* <END_BRACKET>
+   <START_BRACKET> (list_expression() (<COMMA> list_expression())*)? <END_BRACKET>
 }
 
 void declare_conditional_params():
 {}
 {
-   <START_PARAM>expression()(logic_operator()expression())*<END_PARAM>
+  <START_PARAM>common()<END_PARAM>
 }
 
 void declare_function_params():
 {}
 {
-   <START_PARAM> (list_expression())* <END_PARAM>
+   <START_PARAM>
+        (list_expression()(<COMMA> list_expression())*)?
+   <END_PARAM>
 }
 
 // Expressions
@@ -323,8 +339,28 @@ void declare_function_params():
 void return_expression():
 {}
 {
-    expression()
-|   <PIPE> return_expression()
+    ((id()(declare_function_params())? ) | number() )(numerical_expression()  | logical_expression())*
+    |  (bool() | string()) (logical_expression())*
+    | expression()
+    | <PIPE> return_expression()
+}
+
+void string():
+{
+}{
+    <STRING>
+}
+
+void bool():
+{
+}{
+    <BOOLEAN>
+}
+
+void number():
+{
+}{
+    <NUMBER>
 }
 
 void expression():
@@ -333,82 +369,56 @@ void expression():
     declare_lambda_function()
 |   declare_list()
 |   module_statements()
-|   <NUMBER> (mathematical_expression() | logical_expression())?
-|   (<STRING> | <BOOLEAN>) (logical_expression())?
-|   <GENERIC_ID> (right_side_expression())*
-|   priority_expression()(right_side_expression())?
 }
 
-void right_side_expression():
-{}
+void logical_expression():
 {
-    callable_expression()
-|   logical_expression()
-|   mathematical_expression()
+}
+{
+    (	<AND>
+     |	<OR>
+     |   <GREATER>
+     |	<SMALLER>
+     |	<GREATER_OR_EQUAL>
+     |	<SMALLER_OR_EQUAL>
+     |	<DIFFERENT>
+     |	<EQUAL> ) (number() | priority_expression() | bool() | string() | id() )
+}
+
+void numerical_expression():
+{
+
+}
+{
+   (<SUM> | <SUBTRACT> | <MULTIPLY> | <DIVIDE> | <REST>) (number() | priority_expression() | id())
 }
 
 void callable_expression():
 {}
 {
-    (breckets_expression())+
-|   callable_function_statements()
-}
-
-void logical_expression():
-{}
-{
-  logic_operator() expression()
-}
-
-void mathematical_expression():
-{}
-{
-  math_operator() expression()
+    breckets_expression()
+|   declare_function_params()
 }
 
 void priority_expression():
 {}
 {
-    <START_PARAM> expression() <END_PARAM>
-}
-
-void breckets_expression():
-{}
-{
-   <START_BRACKET> expression() <END_BRACKET>
+    <START_PARAM>
+      ( id() (callable_expression())? | number() ) ( numerical_expression()  | logical_expression())*
+    <END_PARAM>
 }
 
 void list_expression():
 {}
 {
-    expression() (<COMMA> expression())*
+    ( id() (callable_expression())* | number() ) (numerical_expression())* | bool() | string()  | expression()
 }
 
-// Operators
-void math_operator():
+void breckets_expression():
 {}
 {
-    <SUM>
-|   <SUBTRACT>
-|   <MULTIPLY>
-|   <DIVIDE>
-|   <REST>
+   <START_BRACKET>
+        number()
+   <END_BRACKET>
 }
-
-
-void logic_operator():
-{}
-{
-	<AND>
-|	<OR>
-|   <GREATER>
-|	<SMALLER>
-|	<GREATER_OR_EQUAL>
-|	<SMALLER_OR_EQUAL>
-|	<DIFFERENT>
-|	<EQUAL>
-}
-
-
-
 
