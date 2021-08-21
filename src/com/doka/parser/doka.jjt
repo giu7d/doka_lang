@@ -6,6 +6,8 @@ PARSER_BEGIN(Doka)
 package parser;
 import javax.swing.*;
 import java.io.*;
+import recovery.*;
+
 
 public class Doka {
 
@@ -134,6 +136,53 @@ public class Doka {
         return path;
     }
 
+/*public static  String im(int x)
+  {
+    int k;
+	String s;
+    s = tokenImage[x];
+    k = s.lastIndexOf("\"");
+    try {
+      s = s.substring(1,k);
+    }
+   catch (StringIndexOutOfBoundsException e)
+	   {}
+   return s;
+  }
+
+  static Token lastError = null;
+  static boolean eof;
+
+  static void consumeUntil(RecoverySet g, ParseException e, String met) throws ParseEOFException, ParseException
+  {
+	Token tok;
+	System.out.println();
+	System.out.println("*** " + met + " ***");
+	System.out.println("     Conjunto de sincronização: " + g);
+
+	if (g == null) throw e; // se o conjunto é null, propaga a exceção
+
+	tok = getToken(1); // pega token corrente
+	while ( ! eof )	{ // se não chegou ao fim do arquivo
+	  if ( g.contains(tok.kind)) {//achou um token no conjunto
+	    System.out.println("     Encontrado token de sincronização: " +
+	                       im(tok.kind));
+	    break;
+	  }
+	  System.out.println("     Ignorando o token: " + im(tok.kind));
+	  getNextToken();     // pega próximo token
+      tok = getToken(1);
+	  if (tok.kind == EOF && ! g.contains(EOF) ) // fim da entrada?
+	      eof = true;
+	}
+    if ( tok != lastError)  {
+	  System.out.println(e.getMessage());
+	  lastError = tok;
+
+	}
+	if ( eof )
+	  throw new ParseEOFException("Encontrei EOF onde não deveria.");
+  }*/
 }
 
 PARSER_END(Doka)
@@ -238,7 +287,7 @@ void block():
 void declaration_statements():
 {}
 {
-    id() (declare_assigment() | (declare_function_params())+)
+    id() (declare_assignment() | (declare_function_params())+)
 |   declare_function() | declare_condition()
 }
 
@@ -249,33 +298,30 @@ void module_statements():
     | <IO_MODULE><DOT>id()module_io_params()
 }
 
+void common_expressions():
+{}
+{
+    (id() (callable_expression())* ( numerical_expression()  | logical_expression())*)
+        | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
+        | ((bool() | string() ) (logical_expression())*)
+}
+
+
 void module_io_params():
 {
 }
 {
     <START_PARAM>
-        common()(<COMMA>common())*
+        common_expressions() (<COMMA>common_expressions() )*
     <END_PARAM>
 }
 
 // Declarations
 
-void declare_assigment():
+void declare_assignment():
 {}
 {
-    <ASSIGN>
-        (
-            common()
-            | expression()
-        )
-}
-
-void common():
-{}
-{
-    (id() ( callable_expression() | numerical_expression()  | logical_expression())*)
-        | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
-        | ((bool() | string() ) (logical_expression())*)
+    <ASSIGN>(common_expressions()| expression())
 }
 
 void id():
@@ -284,16 +330,23 @@ void id():
     <GENERIC_ID>
 }
 
+void functional_block():
+{}
+{
+    (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?
+}
+
+
 void declare_condition():
 {}
 {
   <IF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
+    functional_block()
   (<ELSEIF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
+    functional_block()
   )*
   (<ELSE> <START_BLOCK> (<EOL>)*
-    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
+    functional_block()
   )?
   <END_BLOCK><EOL>
 }
@@ -310,7 +363,7 @@ void declare_function():
 {}
 {
     <FUNCTION> id() declare_function_params() <START_BLOCK> (<EOL>)+
-        (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?
+        functional_block()
     <END_BLOCK>
 }
 
@@ -323,7 +376,7 @@ void declare_list():
 void declare_conditional_params():
 {}
 {
-  <START_PARAM>common()<END_PARAM>
+  <START_PARAM>common_expressions()<END_PARAM>
 }
 
 void declare_function_params():
@@ -347,6 +400,7 @@ void return_expression():
 
 void string():
 {
+
 }{
     <STRING>
 }
@@ -362,6 +416,8 @@ void number():
 }{
     <NUMBER>
 }
+
+
 
 void expression():
 {}
@@ -396,7 +452,7 @@ void numerical_expression():
 void callable_expression():
 {}
 {
-    breckets_expression()
+    brackets_expression()
 |   declare_function_params()
 }
 
@@ -414,7 +470,7 @@ void list_expression():
     ( id() (callable_expression())* | number() ) (numerical_expression())* | bool() | string()  | expression()
 }
 
-void breckets_expression():
+void brackets_expression():
 {}
 {
    <START_BRACKET>

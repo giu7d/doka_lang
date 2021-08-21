@@ -7,6 +7,8 @@ PARSER_BEGIN(Doka)
 package parser;
 import javax.swing.*;
 import java.io.*;
+import recovery.*;
+
 
 public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants/*@egen*/ {/*@bgen(jjtree)*/
   protected static JJTDokaState jjtree = new JJTDokaState();
@@ -138,6 +140,53 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants/*@egen*/ {/*@bgen
         return path;
     }
 
+/*public static  String im(int x)
+  {
+    int k;
+	String s;
+    s = tokenImage[x];
+    k = s.lastIndexOf("\"");
+    try {
+      s = s.substring(1,k);
+    }
+   catch (StringIndexOutOfBoundsException e)
+	   {}
+   return s;
+  }
+
+  static Token lastError = null;
+  static boolean eof;
+
+  static void consumeUntil(RecoverySet g, ParseException e, String met) throws ParseEOFException, ParseException
+  {
+	Token tok;
+	System.out.println();
+	System.out.println("*** " + met + " ***");
+	System.out.println("     Conjunto de sincroniza\u00c3\u00a7\u00c3\u00a3o: " + g);
+
+	if (g == null) throw e; // se o conjunto \u00c3\u00a9 null, propaga a exce\u00c3\u00a7\u00c3\u00a3o
+
+	tok = getToken(1); // pega token corrente
+	while ( ! eof )	{ // se n\u00c3\u00a3o chegou ao fim do arquivo
+	  if ( g.contains(tok.kind)) {//achou um token no conjunto
+	    System.out.println("     Encontrado token de sincroniza\u00c3\u00a7\u00c3\u00a3o: " +
+	                       im(tok.kind));
+	    break;
+	  }
+	  System.out.println("     Ignorando o token: " + im(tok.kind));
+	  getNextToken();     // pega pr\u00c3\u00b3ximo token
+      tok = getToken(1);
+	  if (tok.kind == EOF && ! g.contains(EOF) ) // fim da entrada?
+	      eof = true;
+	}
+    if ( tok != lastError)  {
+	  System.out.println(e.getMessage());
+	  lastError = tok;
+
+	}
+	if ( eof )
+	  throw new ParseEOFException("Encontrei EOF onde n\u00c3\u00a3o deveria.");
+  }*/
 }
 
 PARSER_END(Doka)
@@ -310,7 +359,7 @@ void declaration_statements():
 {/*@bgen(jjtree) declaration_statements */
     try {
 /*@egen*/
-    id() (declare_assigment() | (declare_function_params())+)
+    id() (declare_assignment() | (declare_function_params())+)
 |   declare_function() | declare_condition()/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -367,6 +416,41 @@ void module_statements():
 /*@egen*/
 }
 
+void common_expressions():
+{/*@bgen(jjtree) common_expressions */
+  SimpleNode jjtn000 = new SimpleNode(JJTCOMMON_EXPRESSIONS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) common_expressions */
+    try {
+/*@egen*/
+    (id() (callable_expression())* ( numerical_expression()  | logical_expression())*)
+        | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
+        | ((bool() | string() ) (logical_expression())*)/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
+
 void module_io_params():
 {/*@bgen(jjtree) module_io_params */
   SimpleNode jjtn000 = new SimpleNode(JJTMODULE_IO_PARAMS);
@@ -378,7 +462,7 @@ void module_io_params():
     try {
 /*@egen*/
     <START_PARAM>
-        common()(<COMMA>common())*
+        common_expressions() (<COMMA>common_expressions() )*
     <END_PARAM>/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -404,54 +488,16 @@ void module_io_params():
 
 // Declarations
 
-void declare_assigment():
-{/*@bgen(jjtree) declare_assigment */
-  SimpleNode jjtn000 = new SimpleNode(JJTDECLARE_ASSIGMENT);
+void declare_assignment():
+{/*@bgen(jjtree) declare_assignment */
+  SimpleNode jjtn000 = new SimpleNode(JJTDECLARE_ASSIGNMENT);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) declare_assigment */
+{/*@bgen(jjtree) declare_assignment */
     try {
 /*@egen*/
-    <ASSIGN>
-        (
-            common()
-            | expression()
-        )/*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        throw (RuntimeException)jjte000;
-      }
-      if (jjte000 instanceof ParseException) {
-        throw (ParseException)jjte000;
-      }
-      throw (Error)jjte000;
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
-    }
-/*@egen*/
-}
-
-void common():
-{/*@bgen(jjtree) common */
-  SimpleNode jjtn000 = new SimpleNode(JJTCOMMON);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) common */
-    try {
-/*@egen*/
-    (id() ( callable_expression() | numerical_expression()  | logical_expression())*)
-        | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
-        | ((bool() | string() ) (logical_expression())*)/*@bgen(jjtree)*/
+    <ASSIGN>(common_expressions()| expression())/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -492,6 +538,39 @@ void id():
 /*@egen*/
 }
 
+void functional_block():
+{/*@bgen(jjtree) functional_block */
+  SimpleNode jjtn000 = new SimpleNode(JJTFUNCTIONAL_BLOCK);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) functional_block */
+    try {
+/*@egen*/
+    (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
+
 void declare_condition():
 {/*@bgen(jjtree) declare_condition */
   SimpleNode jjtn000 = new SimpleNode(JJTDECLARE_CONDITION);
@@ -502,12 +581,12 @@ void declare_condition():
   try {
 /*@egen*/
   <IF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
+    functional_block()
   (<ELSEIF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
+    functional_block()
   )*
   (<ELSE> <START_BLOCK> (<EOL>)*
-    (block())* <RETURN_ARROW> return_expression()(<EOL> | return_expression())*
+    functional_block()
   )?
   <END_BLOCK><EOL>/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
@@ -576,7 +655,7 @@ void declare_function():
     try {
 /*@egen*/
     <FUNCTION> id() declare_function_params() <START_BLOCK> (<EOL>)+
-        (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?
+        functional_block()
     <END_BLOCK>/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -641,7 +720,7 @@ void declare_conditional_params():
 {/*@bgen(jjtree) declare_conditional_params */
   try {
 /*@egen*/
-  <START_PARAM>common()<END_PARAM>/*@bgen(jjtree)*/
+  <START_PARAM>common_expressions()<END_PARAM>/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -741,6 +820,7 @@ void string():
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/
+
 }{/*@bgen(jjtree) string */
     try {
 /*@egen*/
@@ -788,6 +868,8 @@ void number():
     }
 /*@egen*/
 }
+
+
 
 void expression():
 {/*@bgen(jjtree) expression */
@@ -906,7 +988,7 @@ void callable_expression():
 {/*@bgen(jjtree) callable_expression */
     try {
 /*@egen*/
-    breckets_expression()
+    brackets_expression()
 |   declare_function_params()/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -996,13 +1078,13 @@ void list_expression():
 /*@egen*/
 }
 
-void breckets_expression():
-{/*@bgen(jjtree) breckets_expression */
-  SimpleNode jjtn000 = new SimpleNode(JJTBRECKETS_EXPRESSION);
+void brackets_expression():
+{/*@bgen(jjtree) brackets_expression */
+  SimpleNode jjtn000 = new SimpleNode(JJTBRACKETS_EXPRESSION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) breckets_expression */
+{/*@bgen(jjtree) brackets_expression */
    try {
 /*@egen*/
    <START_BRACKET>
