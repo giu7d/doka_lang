@@ -1,0 +1,7 @@
+module App
+	a = 5
+	b = 4
+	c = b * c // 4
+	d = c
+	IO.out("ola")
+	
