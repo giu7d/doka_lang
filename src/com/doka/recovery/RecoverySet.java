@@ -7,7 +7,6 @@ import java.util.*;
 
 public class RecoverySet extends HashSet {
     public RecoverySet()
-    // cria conjunto vazio 
      {
         super();
     }
@@ -25,7 +24,7 @@ public class RecoverySet extends HashSet {
     }
 
     public RecoverySet union(RecoverySet s)
-    // faz a uni�o de dois conjuntos
+    // faz a uniao de dois conjuntos
      {
         RecoverySet t = null;
 

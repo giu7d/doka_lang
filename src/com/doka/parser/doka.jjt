@@ -1,5 +1,8 @@
 options {
   STATIC = true;
+  OUTPUT_DIRECTORY = "parser";
+  GRAMMAR_ENCODING = "ISO_8859-1";
+  //DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN(Doka)
@@ -7,7 +10,6 @@ package parser;
 import javax.swing.*;
 import java.io.*;
 import recovery.*;
-
 
 public class Doka {
 
@@ -68,20 +70,67 @@ public class Doka {
         }
     }
 
-    public static void parseFileStream(String path) {
+      public static String im(int x)
+      {
+        int k;
+    	String s;
+        s = tokenImage[x];
+        k = s.lastIndexOf("\"");
         try {
+          s = s.substring(1,k);
+        }
+       catch (StringIndexOutOfBoundsException e)
+    	   {}
+       return s;
+      }
+
+      static Token lastError = null;
+      static boolean eof;
+
+      static void consumeUntil(RecoverySet g, ParseException e, String met) throws ParseEOFException, ParseException{
+    	Token tok;
+    	System.out.println();
+    	System.out.println("*** " + met + " ***");
+    	System.out.println("     Conjunto de sincronização: " + g);
+
+    	if (g == null) throw e;
+
+    	tok = getToken(1);
+    	while ( ! eof )	{
+    	  if ( g.contains(tok.kind)) {
+    	    System.out.println("     Encontrado token de sincronização: " +
+    	                       im(tok.kind));
+    	    break;
+    	  }
+    	  System.out.println("     Ignorando o token: " + im(tok.kind));
+    	  getNextToken();
+          tok = getToken(1);
+    	  if (tok.kind == EOF && ! g.contains(EOF) )
+    	      eof = true;
+    	}
+        if ( tok != lastError)  {
+    	  System.out.println(e.getMessage());
+    	  lastError = tok;
+
+    	}
+    	if ( eof )
+    	  throw new ParseEOFException("Encontrei EOF onde não deveria.");
+      }
+
+    public static void parseFileStream(String path) {
+          BufferedReader fileBuffer;
+          fileBuffer = Doka.getFileBuffer(path);
+          try {
             System.out.println(">\tParsing...");
-            BufferedReader fileBuffer = Doka.getFileBuffer(path);
+
             Doka parser = new Doka(fileBuffer);
             SimpleNode tree = parser.Main();
             showTree(tree);
-        } catch (ParseException e) {
-            System.out.println(">\tSyntatic Error");
-            System.out.println(e.getMessage());
-		} catch (TokenMgrError e) {
-            System.out.println(">\tLexical Error");
-            System.out.println(e.getMessage());
         } catch (Exception e) {
+            System.out.println(">\tException");
+            System.out.println(e.getMessage());
+            Doka.ReInit(fileBuffer);
+        } catch (Error e){
             System.out.println(">\tError");
             System.out.println(e.getMessage());
         }
@@ -96,10 +145,13 @@ public class Doka {
                 SimpleNode tree = parser.Main();
                 showTree(tree);
             } catch (Exception e) {
-                System.out.println(":Error");
+                System.out.println(":Exception");
                 System.out.println(e.getMessage());
                 Doka.ReInit(System.in);
-            }
+            }  catch (Error e){
+                  System.out.println(">\tError");
+                  System.out.println(e.getMessage());
+              }
         }
     }
 
@@ -114,7 +166,6 @@ public class Doka {
         BufferedReader buffer;
 
         try {
-
             System.out.println(">\tReading File");
             File file  = new File(path);
             FileReader reader = new FileReader(file);
@@ -135,54 +186,6 @@ public class Doka {
         System.out.println(">\tLoad file: " + path);
         return path;
     }
-
-/*public static  String im(int x)
-  {
-    int k;
-	String s;
-    s = tokenImage[x];
-    k = s.lastIndexOf("\"");
-    try {
-      s = s.substring(1,k);
-    }
-   catch (StringIndexOutOfBoundsException e)
-	   {}
-   return s;
-  }
-
-  static Token lastError = null;
-  static boolean eof;
-
-  static void consumeUntil(RecoverySet g, ParseException e, String met) throws ParseEOFException, ParseException
-  {
-	Token tok;
-	System.out.println();
-	System.out.println("*** " + met + " ***");
-	System.out.println("     Conjunto de sincronização: " + g);
-
-	if (g == null) throw e; // se o conjunto é null, propaga a exceção
-
-	tok = getToken(1); // pega token corrente
-	while ( ! eof )	{ // se não chegou ao fim do arquivo
-	  if ( g.contains(tok.kind)) {//achou um token no conjunto
-	    System.out.println("     Encontrado token de sincronização: " +
-	                       im(tok.kind));
-	    break;
-	  }
-	  System.out.println("     Ignorando o token: " + im(tok.kind));
-	  getNextToken();     // pega próximo token
-      tok = getToken(1);
-	  if (tok.kind == EOF && ! g.contains(EOF) ) // fim da entrada?
-	      eof = true;
-	}
-    if ( tok != lastError)  {
-	  System.out.println(e.getMessage());
-	  lastError = tok;
-
-	}
-	if ( eof )
-	  throw new ParseEOFException("Encontrei EOF onde não deveria.");
-  }*/
 }
 
 PARSER_END(Doka)
@@ -261,220 +264,332 @@ TOKEN : {
 }
 
 
-SimpleNode Main() :
-{}
+SimpleNode Main() throws ParseEOFException:
+{RecoverySet sync = Follow.Main;}
 {
-    (<EOF>|<EXIT><EOL>) {
-        return jjtThis;
-    }
-|    <MODULE> <MODULE_ID> <EOL>
-        (block() | <EOL>)*
-    (<EOF>|<EXIT><EOL>) {
-        return jjtThis;
+    try{
+        (<EOL>)* (<EOF>|<EXIT><EOL>) { return jjtThis; }
+        | <MODULE> <MODULE_ID> <EOL>
+            (block() | <EOL>)*
+          (<EOF>|<EXIT><EOL>) { return jjtThis; }
+    }catch(ParseException e){
+        consumeUntil(sync, e, "main");
     }
 }
 
 // Blocks
 
-void block():
-{}
+void block() throws ParseEOFException:
+{RecoverySet sync = Follow.block;}
 {
-    declaration_statements()
-|   module_statements()
+    try{
+        declaration_statements()
+    |   module_statements()
+    }catch(ParseException e){
+         consumeUntil(sync, e, "bloco");
+    }
 }
 
 // Statements
-void declaration_statements():
-{}
+void declaration_statements() throws ParseEOFException:
+{RecoverySet sync = Follow.declaration_statements;}
 {
-    id() (declare_assignment() | (declare_function_params())+)
-|   declare_function() | declare_condition()
+    try{
+            id() (declare_assignment() | (declare_function_params())+)
+        |   declare_function() | declare_condition()
+    }catch(ParseException e){
+         consumeUntil(sync, e, "declaração");
+    }
 }
 
-void module_statements():
-{}
+void module_statements() throws ParseEOFException:
+{RecoverySet sync = Follow.module_statements;}
 {
-    <LIST_MODULE><DOT>id()declare_function_params()
-    | <IO_MODULE><DOT>id()module_io_params()
+    try{
+        <LIST_MODULE><DOT>id()declare_function_params()
+        | <IO_MODULE><DOT>id()module_io_params()
+    }catch(ParseException e){
+         consumeUntil(sync, e, "declaração de módulo");
+    }
 }
 
-void common_expressions():
-{}
+void common_expressions() throws ParseEOFException:
+{RecoverySet sync = Follow.common_expressions;}
 {
-    (id() (callable_expression())* ( numerical_expression()  | logical_expression())*)
-        | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
-        | ((bool() | string() ) (logical_expression())*)
+    try{
+        (id() (callable_expression())* ( numerical_expression()  | logical_expression())*)
+            | ((number() | priority_expression()) (numerical_expression()  | logical_expression())*)
+            | ((bool() | string() ) (logical_expression())*)
+    }catch(ParseException e){
+        consumeUntil(sync, e, "expressão comum");
+    }
 }
 
-
-void module_io_params():
+void module_io_params() throws ParseEOFException:
+{RecoverySet sync = Follow.module_io_params;}
 {
-}
-{
-    <START_PARAM>
-        common_expressions() (<COMMA>common_expressions() )*
-    <END_PARAM>
+    try{
+            <START_PARAM>
+                common_expressions() (<COMMA>common_expressions() )*
+            <END_PARAM>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "parametros de modulo IO");
+    }
 }
 
 // Declarations
 
-void declare_assignment():
-{}
+void declare_assignment() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_assignment;}
 {
-    <ASSIGN>(common_expressions()| expression())
+    try{
+        <ASSIGN>(common_expressions()| expression())
+    }catch(ParseException e){
+        consumeUntil(sync, e, "atribuição");
+    }
 }
 
-void id():
-{}
+void id() throws ParseEOFException:
+{RecoverySet sync = Follow.id;}
 {
-    <GENERIC_ID>
+    try{
+        <GENERIC_ID>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "identificador");
+    }
+
 }
 
-void functional_block():
-{}
+void functional_block() throws ParseEOFException:
+{RecoverySet sync = Follow.functional_block;}
 {
-    (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?
+    try{
+        (block()(<EOL>)*)* (<RETURN_ARROW> return_expression()(<EOL> | return_expression())*)?
+    }catch(ParseException e){
+        consumeUntil(sync, e, "bloco de função");
+    }
 }
 
-
-void declare_condition():
-{}
+void declare_condition() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_condition;}
 {
-  <IF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    functional_block()
-  (<ELSEIF> declare_conditional_params() <START_BLOCK> (<EOL>)*
-    functional_block()
-  )*
-  (<ELSE> <START_BLOCK> (<EOL>)*
-    functional_block()
-  )?
-  <END_BLOCK><EOL>
+    try{
+          <IF> declare_conditional_params() <START_BLOCK> (<EOL>)*
+            functional_block()
+          (<ELSEIF> declare_conditional_params() <START_BLOCK> (<EOL>)*
+            functional_block()
+          )*
+          (<ELSE> <START_BLOCK> (<EOL>)*
+            functional_block()
+          )?
+          <END_BLOCK><EOL>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "declaração de condição");
+    }
+
 }
 
-void declare_lambda_function():
-{}
+void declare_lambda_function() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_lambda_function;}
 {
-    <START_BLOCK> declare_function_params() <ARROW>(<EOL>)*
-        return_expression()(<EOL>)*
-    <END_BLOCK>
+    try{
+        <START_BLOCK> declare_function_params() <ARROW>(<EOL>)*
+            return_expression()(<EOL>)*
+        <END_BLOCK>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "declaração de função lambda");
+    }
 }
 
-void declare_function():
-{}
+void declare_function() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_function;}
 {
-    <FUNCTION> id() declare_function_params() <START_BLOCK> (<EOL>)+
-        functional_block()
-    <END_BLOCK>
+    try{
+            <FUNCTION> id() declare_function_params() <START_BLOCK> (<EOL>)+
+                functional_block()
+            <END_BLOCK>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "declaração de função");
+    }
+
 }
 
-void declare_list():
-{}
+void declare_list() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_list;}
 {
-   <START_BRACKET> (list_expression() (<COMMA> list_expression())*)? <END_BRACKET>
+    try{
+       <START_BRACKET> (list_expression() (<COMMA> list_expression())*)? <END_BRACKET>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "declaração de lista");
+    }
 }
 
-void declare_conditional_params():
-{}
+void declare_conditional_params() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_conditional_params;}
 {
-  <START_PARAM>common_expressions()<END_PARAM>
+    try{
+         <START_PARAM>common_expressions()<END_PARAM>
+    }catch(ParseException e){
+         consumeUntil(sync, e, "declaração de parâmetro condicional");
+    }
+
 }
 
-void declare_function_params():
-{}
+void declare_function_params() throws ParseEOFException:
+{RecoverySet sync = Follow.declare_conditional_params;}
 {
-   <START_PARAM>
-        (list_expression()(<COMMA> list_expression())*)?
-   <END_PARAM>
+    try{
+           <START_PARAM>
+                (list_expression()(<COMMA> list_expression())*)?
+           <END_PARAM>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "declaração de parâmetro de função");
+    }
 }
 
 // Expressions
 
-void return_expression():
-{}
+void return_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.return_expression;}
 {
-    ((id()(declare_function_params())? ) | number() )(numerical_expression()  | logical_expression())*
-    |  (bool() | string()) (logical_expression())*
-    | expression()
-    | <PIPE> return_expression()
+    try{
+            ((id()(declare_function_params())? ) | number() )(numerical_expression()  | logical_expression())*
+            |  (bool() | string()) (logical_expression())*
+            | expression()
+            | <PIPE> return_expression()
+    }catch(ParseException e){
+        consumeUntil(sync, e, "expressão de retorno");
+    }
 }
 
-void string():
-{
-
-}{
-    <STRING>
+void string()
+    throws ParseEOFException:{
+        RecoverySet sync = Follow.string;
+ }
+ {
+    try{
+            <STRING>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "tipo string");
+    }
 }
 
-void bool():
-{
-}{
-    <BOOLEAN>
+void bool() throws ParseEOFException:
+{RecoverySet sync = Follow.bool;}{
+    try{
+            <BOOLEAN>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "tipo boolean");
+    }
 }
 
-void number():
+void number() throws ParseEOFException:
+{RecoverySet sync = Follow.number;}
 {
-}{
-    <NUMBER>
+    try{
+          <NUMBER>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "tipo number");
+    }
 }
 
-
-
-void expression():
-{}
+void expression() throws ParseEOFException:
+{RecoverySet sync = Follow.expression;}
 {
-    declare_lambda_function()
-|   declare_list()
-|   module_statements()
+    try{
+            declare_lambda_function()
+        |   declare_list()
+        |   module_statements()
+    }catch(ParseException e){
+        consumeUntil(sync, e, "Expressão");
+    }
+
 }
 
-void logical_expression():
+void logical_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.logical_expression;}
 {
-}
-{
-    (	<AND>
-     |	<OR>
-     |   <GREATER>
-     |	<SMALLER>
-     |	<GREATER_OR_EQUAL>
-     |	<SMALLER_OR_EQUAL>
-     |	<DIFFERENT>
-     |	<EQUAL> ) (number() | priority_expression() | bool() | string() | id() )
-}
+    try{
+            logic_operator()  (number() | priority_expression() | bool() | string() | id() )
 
-void numerical_expression():
-{
+    }catch(ParseException e){
+        consumeUntil(sync, e, "expressão lógica ");
+    }
 
 }
+
+void numerical_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.numerical_expression;}
 {
-   (<SUM> | <SUBTRACT> | <MULTIPLY> | <DIVIDE> | <REST>) (number() | priority_expression() | id())
+    try{
+           math_operator() (number() | priority_expression() | id())
+    }catch(ParseException e){
+        consumeUntil(sync, e, "expressão numérica");
+    }
 }
 
-void callable_expression():
-{}
+void callable_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.callable_expression;}
 {
-    brackets_expression()
-|   declare_function_params()
+    try{
+           brackets_expression()
+       |   declare_function_params()
+    }catch(ParseException e){
+        consumeUntil(sync, e, "expressão de chamada");
+    }
 }
 
-void priority_expression():
-{}
+void priority_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.priority_expression;}
 {
-    <START_PARAM>
-      ( id() (callable_expression())? | number() ) ( numerical_expression()  | logical_expression())*
-    <END_PARAM>
+    try{
+        <START_PARAM>
+          ( id() (callable_expression())? | number() ) ( numerical_expression()  | logical_expression())*
+        <END_PARAM>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "Expressão prioridade");
+    }
 }
 
-void list_expression():
-{}
+void list_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.list_expression;}
 {
-    ( id() (callable_expression())* | number() ) (numerical_expression())* | bool() | string()  | expression()
+    try{
+        ( id() (callable_expression())* | number() ) (numerical_expression())* | bool() | string()  | expression()
+    }catch(ParseException e){
+        consumeUntil(sync, e, "Expressão de lista");
+    }
+
 }
 
-void brackets_expression():
-{}
+void brackets_expression() throws ParseEOFException:
+{RecoverySet sync = Follow.brackets_expression;}
 {
-   <START_BRACKET>
-        number()
-   <END_BRACKET>
+    try{
+       <START_BRACKET>
+            number()
+       <END_BRACKET>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "Expressão de colchetes");
+    }
 }
 
+void math_operator() throws ParseEOFException:
+{RecoverySet sync = Follow.math_operator;}
+{
+    try{
+        <SUM> | <SUBTRACT> | <MULTIPLY> | <DIVIDE> | <REST>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "operador matemático");
+    }
+}
+
+void logic_operator() throws ParseEOFException:
+{RecoverySet sync = Follow.logic_operator;}
+{
+    try{
+        <AND> |	<OR> | <GREATER>| <SMALLER> | <GREATER_OR_EQUAL> | <SMALLER_OR_EQUAL> |	<DIFFERENT> | <EQUAL>
+    }catch(ParseException e){
+        consumeUntil(sync, e, "operador lógico");
+    }
+}

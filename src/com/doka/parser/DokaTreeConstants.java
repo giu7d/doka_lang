@@ -29,6 +29,8 @@ public interface DokaTreeConstants
   public int JJTPRIORITY_EXPRESSION = 23;
   public int JJTLIST_EXPRESSION = 24;
   public int JJTBRACKETS_EXPRESSION = 25;
+  public int JJTMATH_OPERATOR = 26;
+  public int JJTLOGIC_OPERATOR = 27;
 
 
   public String[] jjtNodeName = {
@@ -58,6 +60,8 @@ public interface DokaTreeConstants
     "priority_expression",
     "list_expression",
     "brackets_expression",
+    "math_operator",
+    "logic_operator",
   };
 }
-/* JavaCC - OriginalChecksum=d258b396b7ba891473bf00ef10272d79 (do not edit this line) */
+/* JavaCC - OriginalChecksum=da94bff560a00af0d33e8c3b46a525b6 (do not edit this line) */

@@ -6,14 +6,17 @@ public class Follow {
 
     static public final RecoverySet Main = new RecoverySet();
     static public final RecoverySet functional_block = new RecoverySet();
-    static public final RecoverySet block = new RecoverySet().union(Main).union(functional_block);
+    static public final RecoverySet block = new RecoverySet()
+            .union(Main).union(functional_block);
 
     static public final RecoverySet declaration_statements = block;
     static public final RecoverySet declare_assignment = declaration_statements;
 
-    static public final RecoverySet return_expression = new RecoverySet().union(functional_block);
+    static public final RecoverySet return_expression = new RecoverySet()
+            .union(functional_block);
 
-    static public final RecoverySet common_expressions = new RecoverySet().union(declare_assignment);
+    static public final RecoverySet common_expressions = new RecoverySet()
+            .union(declare_assignment);
 
     static public final RecoverySet logical_expression =  new RecoverySet()
             .union(common_expressions)
@@ -46,7 +49,8 @@ public class Follow {
     static public final RecoverySet declare_conditional_params = new RecoverySet();
 
     static public final RecoverySet callable_expression = new RecoverySet()
-            .union(list_expression).union(common_expressions);
+            .union(list_expression)
+            .union(common_expressions);
 
     static public final RecoverySet declare_function_params = new RecoverySet()
             .union(return_expression)
@@ -68,9 +72,12 @@ public class Follow {
 
     static public final RecoverySet brackets_expression = callable_expression;
 
+    static public final RecoverySet math_operator = new RecoverySet();
+
+    static public final RecoverySet logic_operator = new RecoverySet();
+
     static {
         Main.add(DokaConstants.EOF);
-        Main.add(DokaConstants.EOL);
         Main.add(DokaConstants.EXIT);
 
         block.add(DokaConstants.RETURN_ARROW);
@@ -179,5 +186,15 @@ public class Follow {
         callable_expression.add(DokaConstants.DIFFERENT);
         callable_expression.add(DokaConstants.EQUAL);
         callable_expression.add(DokaConstants.END_PARAM);
+
+        math_operator.add(DokaConstants.GENERIC_ID);
+        math_operator.add(DokaConstants.START_PARAM);
+        math_operator.add(DokaConstants.NUMBER);
+
+        logic_operator.add(DokaConstants.GENERIC_ID);
+        logic_operator.add(DokaConstants.NUMBER);
+        logic_operator.add(DokaConstants.START_PARAM);
+        logic_operator.add(DokaConstants.BOOLEAN);
+        logic_operator.add(DokaConstants.STRING);
     }
 }
