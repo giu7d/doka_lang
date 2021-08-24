@@ -1,0 +1,1 @@
+javac src/com/doka/**/*.java -d out
