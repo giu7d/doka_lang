@@ -1,7 +1,20 @@
 module App
-	a = 5
-	b = 4
-	c = b * c // 4
-	d = c
-	IO.out("ola")
+	if:
+		a = 
+	end
+	
+	a = 5#56
+	
+	a = 5.1
+	$
+	a = [a, "", c, 5+, f()]
+	
+	fun sum(a, num:
+		<- a + num
+	end
+	
+    List.map(arr, :(a) ->
+        IO.out(sum(a, ))
+    end)
+
 	

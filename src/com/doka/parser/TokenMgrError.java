@@ -104,12 +104,11 @@ public class TokenMgrError extends Error
    */
   protected static String LexicalErr(boolean EOFSeen, int lexState, int errorLine, int errorColumn, String errorAfter, int curChar) {
     char curChar1 = (char)curChar;
-    return("Lexical error at line " + //
-          errorLine + ", column " + //
-          errorColumn + ".  Encountered: " + //
-          (EOFSeen ? "<EOF>" : ("'" + addEscapes(String.valueOf(curChar)) + "' (" + (int)curChar + "),")) + //
-          (errorAfter == null || errorAfter.length() == 0 ? "" : " after prefix \"" + addEscapes(errorAfter) + "\"")) + //
-          (lexState == 0 ? "" : " (in lexical state " + lexState + ")");
+    return(" > Erro lexico - linha: " + errorLine + ", coluna: " + errorColumn + //
+            " > Encontrado: " + //
+          (EOFSeen ? "<EOF>" : ("'" + addEscapes(String.valueOf(curChar1)) + "'")) +//
+          (errorAfter == null || errorAfter.length() == 0 ? "" : " depois de \"" + addEscapes(errorAfter) + "\"")) + //
+          (lexState == 0 ? "" : " (no estado lexico " + lexState + ")");
   }
 
   /**
