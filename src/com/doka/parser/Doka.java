@@ -59,7 +59,7 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
                 }
             }
         } catch (Exception e) {
-            System.out.println(":Error");
+            System.out.println(" > Erro");
             System.out.println(e.getMessage());
         }
     }
@@ -84,19 +84,19 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
       static void consumeUntil(RecoverySet g, ParseException e, String met) throws ParseEOFException, ParseException{
         Token tok;
         System.out.println();
-        System.out.println("*** " + met + " ***");
-        System.out.println("     Conjunto de sincroniza\u00c3\u00a7\u00c3\u00a3o: " + g);
+        System.out.println("em: " + met);
+        System.out.println(" > Conjunto de sincronizacao: " + g);
 
         if (g == null) throw e;
 
         tok = getToken(1);
         while ( ! eof ) {
           if ( g.contains(tok.kind)) {
-            System.out.println("     Encontrado token de sincroniza\u00c3\u00a7\u00c3\u00a3o: " +
+            System.out.println(" > Encontrado token de sincronizacao: " +
                                im(tok.kind));
             break;
           }
-          System.out.println("     Ignorando o token: " + im(tok.kind));
+          System.out.println(" > Ignorando o token: " + im(tok.kind));
           getNextToken();
           tok = getToken(1);
           if (tok.kind == EOF && ! g.contains(EOF) )
@@ -108,7 +108,7 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
 
         }
         if ( eof )
-          throw new ParseEOFException("Encontrei EOF onde n\u00c3\u00a3o deveria.");
+          throw new ParseEOFException(" > Encontrado EOF onde nao deveria.");
       }
 
     public static void parseFileStream(String path) {
@@ -116,16 +116,23 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
           fileBuffer = Doka.getFileBuffer(path);
           try {
             System.out.println(">\tParsing...");
-
             Doka parser = new Doka(fileBuffer);
             SimpleNode tree = parser.Main();
             showTree(tree);
-        } catch (Exception e) {
-            System.out.println(">\tException");
+        } catch (ParseException e) {
+            System.out.print(" > Erro Sintatico");
             System.out.println(e.getMessage());
-            Doka.ReInit(fileBuffer);
+            Doka.ReInit(System.in);
+        } catch (TokenMgrError e) {
+            System.out.print(" > Erro Lexico");
+            System.out.println(e.getMessage());
+            Doka.ReInit(System.in);
+        } catch (Exception e) {
+          System.out.print(" > Exception");
+          System.out.println(e.getMessage());
+          Doka.ReInit(System.in);
         } catch (Error e){
-            System.out.println(">\tError");
+            System.out.print(" > Erro");
             System.out.println(e.getMessage());
         }
     }
@@ -138,12 +145,21 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
             try{
                 SimpleNode tree = parser.Main();
                 showTree(tree);
+            }catch (ParseException e) {
+                  System.out.print(" > Erro Sintatico");
+                  System.out.println(e.getMessage());
+                  Doka.ReInit(System.in);
+            } catch (TokenMgrError e) {
+                  System.out.print(" > Erro Lexico");
+                  System.out.println(e.getMessage());
+                  Doka.ReInit(System.in);
             } catch (Exception e) {
-                System.out.println(":Exception");
+                System.out.print(" > Exception");
                 System.out.println(e.getMessage());
                 Doka.ReInit(System.in);
-            }  catch (Error e){
-                  System.out.println(">\tError");
+            }
+            catch (Error e){
+                  System.out.print(" > Erro");
                   System.out.println(e.getMessage());
               }
         }
@@ -166,7 +182,7 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
             buffer = new BufferedReader(reader);
         } catch (IOException e) {
             buffer = null;
-            System.out.println(":Error:IO:getFileBuffer");
+            System.out.println(">\tErro:IO:getFileBuffer");
             System.out.println(e.getMessage());
         }
 
@@ -276,7 +292,6 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
             jj_consume_token(-1);
             throw new ParseException();
           }
-{if ("" != null) return jjtn000;}
           break;
           }
         default:
@@ -284,9 +299,13 @@ public class Doka/*@bgen(jjtree)*/implements DokaTreeConstants, DokaConstants {/
           jj_consume_token(-1);
           throw new ParseException();
         }
+{if ("" != null) return jjtn000;}
       } catch (ParseException e) {
 consumeUntil(sync, e, "main");
       }
+jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+{if ("" != null) return jjtn000;}
     } catch (Throwable jjte000) {
 if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -416,7 +435,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o");
+consumeUntil(sync, e, "declaracao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -469,7 +488,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de m\u00c3\u00b3dulo");
+consumeUntil(sync, e, "declaracao de modulo");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -680,7 +699,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "express\u00c3\u00a3o comum");
+consumeUntil(sync, e, "expressao comum");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -787,7 +806,7 @@ void declare_assignment() throws ParseException, ParseEOFException {/*@bgen(jjtr
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "atribui\u00c3\u00a7\u00c3\u00a3o");
+consumeUntil(sync, e, "atribuicao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -920,7 +939,7 @@ if (jjtc000) {
           ;
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "bloco de fun\u00c3\u00a7\u00c3\u00a3o");
+consumeUntil(sync, e, "bloco de funcao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1025,7 +1044,7 @@ if (jjtc000) {
         jj_consume_token(END_BLOCK);
         jj_consume_token(EOL);
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de condi\u00c3\u00a7\u00c3\u00a3o");
+consumeUntil(sync, e, "declaracao de condicao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1089,7 +1108,7 @@ if (jjtc000) {
         }
         jj_consume_token(END_BLOCK);
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de fun\u00c3\u00a7\u00c3\u00a3o lambda");
+consumeUntil(sync, e, "declaracao de funcao lambda");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1141,7 +1160,7 @@ if (jjtc000) {
         functional_block();
         jj_consume_token(END_BLOCK);
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de fun\u00c3\u00a7\u00c3\u00a3o");
+consumeUntil(sync, e, "declaracao de funcao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1206,7 +1225,7 @@ if (jjtc000) {
         }
         jj_consume_token(END_BRACKET);
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de lista");
+consumeUntil(sync, e, "declaracao de lista");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1242,7 +1261,7 @@ if (jjtc000) {
         common_expressions();
         jj_consume_token(END_PARAM);
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de par\u00c3\u00a2metro condicional");
+consumeUntil(sync, e, "declaracao de parametro condicional");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1307,7 +1326,7 @@ if (jjtc000) {
         }
         jj_consume_token(END_PARAM);
       } catch (ParseException e) {
-consumeUntil(sync, e, "declara\u00c3\u00a7\u00c3\u00a3o de par\u00c3\u00a2metro de fun\u00c3\u00a7\u00c3\u00a3o");
+consumeUntil(sync, e, "declaracao de parametro de funcao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1474,7 +1493,7 @@ void return_expression() throws ParseException, ParseEOFException {/*@bgen(jjtre
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "express\u00c3\u00a3o de retorno");
+consumeUntil(sync, e, "expressao de retorno");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1577,7 +1596,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "Express\u00c3\u00a3o");
+consumeUntil(sync, e, "expressao");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1637,7 +1656,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "express\u00c3\u00a3o l\u00c3\u00b3gica ");
+consumeUntil(sync, e, "expressao logica ");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1689,7 +1708,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "express\u00c3\u00a3o num\u00c3\u00a9rica");
+consumeUntil(sync, e, "expressao numerica");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1736,7 +1755,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "express\u00c3\u00a3o de chamada");
+consumeUntil(sync, e, "expressao de chamada");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1844,7 +1863,7 @@ if (jjtc000) {
         }
         jj_consume_token(END_PARAM);
       } catch (ParseException e) {
-consumeUntil(sync, e, "Express\u00c3\u00a3o prioridade");
+consumeUntil(sync, e, "expressao prioridade");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1947,7 +1966,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "Express\u00c3\u00a3o de lista");
+consumeUntil(sync, e, "expressao de lista");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1983,7 +2002,7 @@ if (jjtc000) {
         number();
         jj_consume_token(END_BRACKET);
       } catch (ParseException e) {
-consumeUntil(sync, e, "Express\u00c3\u00a3o de colchetes");
+consumeUntil(sync, e, "expressao de colchetes");
       }
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -2042,7 +2061,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "operador matem\u00c3\u00a1tico");
+consumeUntil(sync, e, "operador matematico");
       }
     } finally {
 if (jjtc000) {
@@ -2096,7 +2115,7 @@ if (jjtc000) {
           throw new ParseException();
         }
       } catch (ParseException e) {
-consumeUntil(sync, e, "operador l\u00c3\u00b3gico");
+consumeUntil(sync, e, "operador logico");
       }
     } finally {
 if (jjtc000) {
